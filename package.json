@@ -9,10 +9,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.31.7",
+    "@hookform/resolvers": "^5.2.1",
     "daisyui": "^5.0.54",
+    "lucide-react": "^0.542.0",
     "next": "15.5.2",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-hook-form": "^7.62.0",
+    "zod": "^4.1.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

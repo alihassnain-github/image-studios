@@ -1,9 +1,79 @@
 'use client';
 
 import { useState } from 'react';
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { useSignUp } from '@clerk/nextjs';
+import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
+import { ClerkAPIError } from '@clerk/types';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/contexts/ToastContext';
+
+const FormSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .nonempty({ message: "Email is required" })
+    .email({ message: "Invalid email address" }),
+  password: z
+    .string()
+    .trim()
+    .nonempty({ message: "Password is required" })
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .max(15, { message: "Password must not exceed 15 characters" })
+    .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter" })
+    .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
+    .regex(/[0-9]/, { message: "Password must contain at least one number" })
+})
 
 export default function SignupForm() {
+
+  const { addToast } = useToast()
+
+  const router = useRouter()
+
+  const { signUp } = useSignUp()
+
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, errors },
+  } = useForm({
+    resolver: zodResolver(FormSchema),
+  })
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    try {
+      await signUp?.create({
+        emailAddress: data.email,
+        password: data.password,
+      })
+
+      await signUp?.prepareEmailAddressVerification({ strategy: "email_code" })
+
+      router.push("/verify-email")
+
+    } catch (err: unknown) {
+      if (isClerkAPIResponseError(err)) {
+        // Clerk gives you an array of ClerkAPIError objects
+        err.errors.forEach((clerkError: ClerkAPIError) => {
+          addToast({
+            message: clerkError.message,
+            variant: "danger",
+          })
+        })
+      } else {
+        // fallback for unexpected errors
+        addToast({
+          message: "Something went wrong. Please try again.",
+          variant: "danger",
+        })
+      }
+    }
+  }
 
   return (
     <div className="card w-full max-w-md bg-base-100 shadow-xl">
@@ -20,8 +90,8 @@ export default function SignupForm() {
         </div>
 
         {/* Social Signup Buttons */}
-        <div className="space-y-3 mb-6">
-          <button className="btn btn-outline w-full gap-2">
+        <div className="mb-6 flex gap-3">
+          <button className="btn btn-outline w-full gap-2 flex-1">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" height="20" viewBox="0 0 20 20" width="20">
               <g clipPath="url(#clip0_98_45)">
                 <path d="M19.9905 10.1871C19.9905 9.36773 19.9224 8.7698 19.7752 8.14972H10.1992V11.848H15.8201C15.7068 12.7671 15.0948 14.1512 13.7349 15.0813L13.7159 15.2051L16.7436 17.497L16.9534 17.5174C18.8798 15.779 19.9905 13.2211 19.9905 10.1871Z" fill="#4285F4" />
@@ -35,14 +105,14 @@ export default function SignupForm() {
                 </clipPath>
               </defs>
             </svg>
-            Continue with Google
+            Google
           </button>
 
-          <button className="btn btn-outline w-full gap-2">
+          <button className="btn btn-outline w-full gap-2 flex-1">
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
             </svg>
-            Continue with GitHub
+            GitHub
           </button>
         </div>
 
@@ -50,27 +120,23 @@ export default function SignupForm() {
         <div className="divider">OR</div>
 
         {/* Registration Form */}
-        <form className="space-y-4">
-          <div className="form-control">
-            <label className="label">
-              <span className="label-text font-medium">Full Name</span>
-            </label>
-            <input
-              type="text"
-              placeholder="Enter your full name"
-              className="input input-bordered w-full"
-            />
-          </div>
+        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
 
           <div className="form-control">
             <label className="label">
               <span className="label-text font-medium">Email</span>
             </label>
             <input
+              {...register("email")}
               type="email"
               placeholder="Enter your email"
               className="input input-bordered w-full"
             />
+            <div className="min-h-5 mt-1">
+              {errors.email && (
+                <p className="text-error text-sm">{errors.email.message as string}</p>
+              )}
+            </div>
           </div>
 
           <div className="form-control">
@@ -79,6 +145,7 @@ export default function SignupForm() {
             </label>
             <div className="relative">
               <input
+                {...register("password")}
                 type={showPassword ? "text" : "password"}
                 placeholder="Create a password"
                 className="input input-bordered w-full pr-12"
@@ -100,10 +167,20 @@ export default function SignupForm() {
                 )}
               </button>
             </div>
+            <div className="min-h-5 mt-1">
+              {errors.password && (
+                <p className="text-error text-sm">{errors.password.message as string}</p>
+              )}
+            </div>
           </div>
 
-          <button type="submit" className="btn btn-primary w-full">
-            Create Account
+          <button type="submit" disabled={isSubmitting} className="btn btn-primary w-full">
+            {isSubmitting ? (
+              <>
+                <span className="loading loading-spinner"></span>
+                Loading
+              </>
+            ) : "Create Account"}
           </button>
         </form>
 

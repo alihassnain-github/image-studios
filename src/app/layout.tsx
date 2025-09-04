@@ -1,6 +1,10 @@
+import {
+  ClerkProvider,
+} from '@clerk/nextjs'
 import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from '@/contexts/ToastContext';
 
 const lexend = Lexend({
   subsets: ["latin"],
@@ -18,10 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
-      <body className={`${lexend.className} antialiased`}>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <ToastProvider>
+        <html lang="en" data-theme="light">
+          <body className={`${lexend.className} antialiased`}>
+            {children}
+          </body>
+        </html>
+      </ToastProvider>
+    </ClerkProvider>
   );
 }
