@@ -73,7 +73,7 @@ export default function Hero() {
                     </div>
 
                     {/* Stats */}
-                    <div className="stats shadow mt-12 bg-base-100 bg-opacity-90 text-black">
+                    <div className="stats stats-vertical md:stats-horizontal shadow mt-12 bg-base-100 bg-opacity-90 text-black">
                         <div className="stat">
                             <div className="stat-title">Total Images</div>
                             <div className="stat-value text-primary">2M+</div>

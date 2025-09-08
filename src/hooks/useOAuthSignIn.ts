@@ -17,7 +17,7 @@ export function useOAuthSignIn() {
         try {
             await signIn.authenticateWithRedirect({
                 strategy,
-                redirectUrl: "/sign-in/sso-callback",
+                redirectUrl: "/sso-callback",
                 redirectUrlComplete: "/",
             })
         } catch (err: unknown) {

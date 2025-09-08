@@ -1,4 +1,11 @@
 import OTPForm from '@/components/forms/opt-form';
+import type { Metadata } from "next";
+import Link from 'next/link';
+
+export const metadata: Metadata = {
+    title: "Verify Email - Image Studio",
+    description: "Verify your email address to complete your Image Studio account setup. Enter the verification code sent to your email.",
+};
 
 export default function VerifyEmailPage() {
     return (
@@ -19,12 +26,12 @@ export default function VerifyEmailPage() {
 
                     {/* Back to Home */}
                     <div className="text-center mt-6">
-                        <a
+                        <Link
                             href="/"
                             className="text-white/80 hover:text-white transition-colors"
                         >
                             ← Back to Home
-                        </a>
+                        </Link>
                     </div>
                 </div>
             </div>

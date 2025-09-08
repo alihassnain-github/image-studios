@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { ClerkAPIError } from '@clerk/types';
 import { useToast } from "@/contexts/ToastContext";
+import { useState } from "react";
 
 const FormSchema = z.object({
     otp: z
@@ -24,6 +25,8 @@ export default function OTPForm() {
 
     const router = useRouter()
     const { signUp, setActive, isLoaded } = useSignUp()
+
+    const [isResending, setIsResending] = useState(false);
 
     const {
         register,
@@ -64,6 +67,37 @@ export default function OTPForm() {
         }
     }
 
+    async function handleResend() {
+        if (!isLoaded) return;
+
+        try {
+            setIsResending(true);
+
+            await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+
+            addToast({
+                message: "Verification code resent. Please check your email.",
+                variant: "success",
+            });
+        } catch (err: unknown) {
+            if (isClerkAPIResponseError(err)) {
+                err.errors.forEach((clerkError: ClerkAPIError) => {
+                    addToast({
+                        message: clerkError.message,
+                        variant: "danger",
+                    });
+                });
+            } else {
+                addToast({
+                    message: "Failed to resend code. Please try again.",
+                    variant: "danger",
+                });
+            }
+        } finally {
+            setIsResending(false);
+        }
+    }
+
     return (
         <div className="card w-full max-w-md bg-base-100 shadow-xl">
             <div className="card-body">
@@ -101,7 +135,7 @@ export default function OTPForm() {
                         </div>
                     </div>
 
-                    <button type="submit" disabled={isSubmitting} className="btn btn-primary w-full">
+                    <button type="submit" disabled={isSubmitting || isResending} className="btn btn-primary w-full">
                         {isSubmitting ? (
                             <>
                                 <span className="loading loading-spinner"></span>
@@ -116,8 +150,8 @@ export default function OTPForm() {
                     <div>
                         <span className="text-sm text-gray-600">
                             Didn't receive the code?{' '}
-                            <button className="link link-primary font-medium">
-                                Resend
+                            <button disabled={isSubmitting || isResending} onClick={handleResend} className="link link-primary font-medium">
+                                {isResending ? "Resending..." : "Resend"}
                             </button>
                         </span>
                     </div>
