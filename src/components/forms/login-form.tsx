@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { ClerkAPIError } from '@clerk/types';
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { useOAuthSignIn } from '@/hooks/useOAuthSignIn';
+import Link from 'next/link';
 
 const FormSchema = z.object({
   email: z
@@ -196,9 +197,9 @@ export default function LoginForm() {
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600">
             Don't have an account?{' '}
-            <a href="/signup" className="link link-primary font-medium">
+            <Link href="/signup" className="link link-primary font-medium">
               Sign up
-            </a>
+            </Link>
           </span>
         </div>
       </div>

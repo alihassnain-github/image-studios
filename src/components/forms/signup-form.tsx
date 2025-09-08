@@ -10,6 +10,7 @@ import { ClerkAPIError } from '@clerk/types';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/contexts/ToastContext';
 import { useOAuthSignIn } from '@/hooks/useOAuthSignIn';
+import Link from 'next/link';
 
 const FormSchema = z.object({
   email: z
@@ -191,9 +192,9 @@ export default function SignupForm() {
         <div className="text-center mt-6">
           <span className="text-sm text-gray-600">
             Already have an account?{' '}
-            <a href="/login" className="link link-primary font-medium">
+            <Link href="/login" className="link link-primary font-medium">
               Sign in
-            </a>
+            </Link>
           </span>
         </div>
       </div>
