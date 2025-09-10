@@ -12,7 +12,7 @@ const lexend = Lexend({
 });
 
 export const metadata: Metadata = {
-  title: "Image Studio - Free Stock Photos & Videos",
+  title: "Image Studios - Free Stock Photos & Videos",
   description: "Search and discover millions of free stock photos and videos powered by Pexels API",
 };
 

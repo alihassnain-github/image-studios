@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-    title: "Verify Email - Image Studio",
-    description: "Verify your email address to complete your Image Studio account setup. Enter the verification code sent to your email.",
+    title: "Verify Email - Image Studios",
+    description: "Verify your email address to complete your Image Studios account setup. Enter the verification code sent to your email.",
 };
 
 export default function VerifyEmailPage() {

@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Login - Image Studio",
-  description: "Sign in to your Image Studio account to access millions of free stock photos and videos. Secure login with email verification.",
+  title: "Login - Image Studios",
+  description: "Sign in to your Image Studios account to access millions of free stock photos and videos. Secure login with email verification.",
 };
 
 export default function LoginPage() {

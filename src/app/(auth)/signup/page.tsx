@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: "Sign Up - Image Studio",
-  description: "Create your free Image Studio account to download and save millions of high-quality stock photos and videos. Join thousands of creators today.",
+  title: "Sign Up - Image Studios",
+  description: "Create your free Image Studios account to download and save millions of high-quality stock photos and videos. Join thousands of creators today.",
 };
 
 export default function SignupPage() {
