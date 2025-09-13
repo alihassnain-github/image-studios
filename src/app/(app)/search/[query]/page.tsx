@@ -1,8 +1,18 @@
-import { ListFilter } from 'lucide-react';
-import FilterBar, { FilterState } from '@/components/filter-bar';
 import SearchSkeleton from '@/components/skeletons/search-skeleton';
+import FilterBar from '@/components/filter-bar';
+import { toTitleCase } from '@/lib/format';
 
-export default function SearchPage() {
+export default async function SearchPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ query: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}) {
+
+  const { query } = await params;
+
+  const filters = (await searchParams);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -14,37 +24,26 @@ export default function SearchPage() {
           {/* Page Title */}
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-base-content">
-              Rocket Photos
+              Free {toTitleCase(decodeURIComponent(query))} Photos
             </h1>
           </div>
 
           {/* Stat Bar and Filter Button */}
           <div className="flex items-center justify-between gap-4 mb-6">
 
+            {/* Filter Bar */}
+            <FilterBar />
+
             <button className="btn">
               Photos <div className="badge badge-sm badge-primary">155.7K</div>
             </button>
 
-            <button className="btn">
-              <ListFilter className="w-4 h-4" />
-              Filters
-              <div className="badge badge-soft badge-primary badge-primary badge-sm">01</div>
-            </button>
           </div>
 
           <SearchSkeleton />
 
         </div>
       </main>
-
-      {/* Filter Bar */}
-      {/* <FilterBar
-        isOpen={isFilterOpen}
-        onClose={() => setIsFilterOpen(false)}
-        filters={filters}
-        onFiltersChange={handleFiltersChange}
-      /> */}
-
     </div>
   );
 }

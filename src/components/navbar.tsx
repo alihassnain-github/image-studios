@@ -5,9 +5,12 @@ import Link from "next/link";
 import { useState } from "react";
 import ProfileModal from "./profile-modal";
 import Image from "next/image";
+import { usePathname } from 'next/navigation';
 import { Search, X } from "lucide-react";
 
 export default function Navbar() {
+
+    const pathname = usePathname();
 
     const { user } = useUser()
     const { signOut } = useClerk()
@@ -15,7 +18,7 @@ export default function Navbar() {
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
 
     return (
-        <nav className="navbar bg-base-100 shadow-lg sticky top-0 z-50">
+        <nav className="navbar bg-base-100 shadow-lg sticky top-0 z-20">
             {/* Centered content to match page container widths */}
             <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 flex items-center gap-4">
                 <div className="navbar-start">
@@ -28,26 +31,32 @@ export default function Navbar() {
                 </div>
 
                 {/* Center search - hidden on small screens */}
-                <div className="hidden md:flex justify-center w-full">
-                    <form className="w-full max-w-xl">
-                        <label className="input input-bordered flex items-center gap-2 w-full">
-                            <input type="text" className="grow" placeholder="Search photos" />
-                            <button type="button" className="btn btn-circle btn-ghost btn-sm">
-                                <Search className="w-4 h-4" />
-                            </button>
-                        </label>
-                    </form>
-                </div>
+                {
+                    pathname !== '/' && (
+                        <div className="hidden md:flex justify-center w-full">
+                            <form className="w-full max-w-xl">
+                                <label className="input input-bordered flex items-center gap-2 w-full">
+                                    <input type="text" className="grow" placeholder="Search photos" />
+                                    <button type="button" className="btn btn-circle btn-ghost btn-sm">
+                                        <Search className="w-4 h-4" />
+                                    </button>
+                                </label>
+                            </form>
+                        </div>
+                    )
+                }
 
                 <div className="navbar-end gap-2">
                     {/* Mobile search trigger */}
-                    <button
-                        className="btn btn-ghost btn-circle btn-sm md:btn-md md:hidden"
-                        aria-label="Open search"
-                        onClick={() => setIsMobileSearchOpen(true)}
-                    >
-                        <Search className="w-5 h-5" />
-                    </button>
+                    {pathname !== '/' && (
+                        <button
+                            className="btn btn-ghost btn-circle btn-sm md:btn-md md:hidden"
+                            aria-label="Open search"
+                            onClick={() => setIsMobileSearchOpen(true)}
+                        >
+                            <Search className="w-5 h-5" />
+                        </button>
+                    )}
                     {!user ? (
                         <>
                             {/* Auth Buttons */}

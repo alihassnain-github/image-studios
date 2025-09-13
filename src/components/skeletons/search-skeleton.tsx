@@ -1,6 +1,6 @@
 export default function SearchSkeleton() {
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="space-y-2">
                     {/* image placeholder */}

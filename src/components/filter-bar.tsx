@@ -1,21 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { X, Check } from 'lucide-react';
+import { ListFilter, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export interface FilterState {
-    orientation: 'landscape' | 'portrait' | 'square' | '';
-    color: string;
-    customColor: string;
-    size: 'small' | 'medium' | 'large' | '';
-}
-
-interface FilterBarProps {
-    isOpen: boolean;
-    onClose: () => void;
-    filters: FilterState;
-    onFiltersChange: (filters: FilterState) => void;
-}
+const sizeOptions = [
+    { value: 'small', label: 'Small' },
+    { value: 'medium', label: 'Medium' },
+    { value: 'large', label: 'Large' },
+];
 
 const supportedColors = [
     { name: 'red', hex: '#ef4444' },
@@ -32,176 +25,207 @@ const supportedColors = [
     { name: 'white', hex: '#ffffff' },
 ];
 
-const sizeOptions = [
-    { value: 'small', label: 'Small' },
-    { value: 'medium', label: 'Medium' },
-    { value: 'large', label: 'Large' },
-];
+export default function FilterBar() {
 
-export default function FilterBar({ isOpen, onClose, filters, onFiltersChange }: FilterBarProps) {
-    const [localFilters, setLocalFilters] = useState<FilterState>(filters);
+    const router = useRouter();
+    const pathname = usePathname();
+    const searchParams = useSearchParams();
 
-    const handleFilterChange = (key: keyof FilterState, value: string) => {
-        const newFilters = { ...localFilters, [key]: value };
-        setLocalFilters(newFilters);
-        onFiltersChange(newFilters);
+    const [formData, setFormData] = useState({
+        orientation: '',
+        color: '',
+        size: '',
+    });
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        const newFormData = { ...formData, [name]: value };
+
+        setFormData(newFormData);
+        updateSearchParams(newFormData);
     };
 
-    const handleCustomColorChange = (hex: string) => {
-        const newFilters = { ...localFilters, customColor: hex, color: hex };
-        setLocalFilters(newFilters);
-        onFiltersChange(newFilters);
+    const updateSearchParams = (data: typeof formData) => {
+        const params = new URLSearchParams(searchParams);
+
+        if (data.orientation) {
+            params.set('orientation', data.orientation);
+        } else {
+            params.delete('orientation');
+        }
+
+        if (data.color) {
+            console.log(data.color);
+
+            const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(data.color);
+            if (isValidHex) {
+                params.set('color', data.color.replace('#', '').toUpperCase());
+            }
+        } else {
+            params.delete('color');
+        }
+
+        if (data.size) {
+            params.set('size', data.size);
+        } else {
+            params.delete('size');
+        }
+
+        router.replace(`${pathname}?${params.toString()}`);
     };
 
-    const clearFilters = () => {
-        const clearedFilters: FilterState = {
-            orientation: '',
-            color: '',
-            customColor: '',
-            size: '',
-        };
-        setLocalFilters(clearedFilters);
-        onFiltersChange(clearedFilters);
-    };
+
+    useEffect(() => {
+        setFormData({
+            orientation: searchParams.get("orientation") || "",
+            color: searchParams.get("color") ? `#${searchParams.get("color")}` : "",
+            size: searchParams.get("size") || "",
+        });
+    }, [searchParams]);
 
     return (
-        <>
-            {/* Backdrop */}
-            {isOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-50 z-40"
-                    onClick={onClose}
-                />
-            )}
-
-            {/* Filter Bar */}
-            <div className={`fixed top-0 right-0 h-full w-80 bg-base-100 shadow-2xl z-50 transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'
-                }`}>
-                <div className="flex flex-col h-full">
-                    {/* Header */}
-                    <div className="flex items-center justify-between p-4 border-b border-base-300">
-                        <h2 className="text-xl font-semibold">Filters</h2>
-                        <button
-                            onClick={onClose}
-                            className="btn btn-ghost btn-sm btn-circle"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-                    </div>
-
-                    {/* Filter Content */}
-                    <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                        {/* Orientation Filter */}
-                        <div>
-                            <label className="text-sm font-medium text-base-content mb-3 block">
-                                Orientation
+        <div className="drawer">
+            <input id="my-drawer" type="checkbox" className="drawer-toggle" />
+            <div className="drawer-content">
+                {/* Page content here */}
+                <label htmlFor="my-drawer" className="btn btn-primary btn-soft drawer-button">
+                    <ListFilter className="w-4 h-4" />
+                    Filters
+                    <div className="badge badge-sm badge-primary">02</div>
+                </label>
+            </div>
+            <div className="drawer-side z-30">
+                <label htmlFor="my-drawer" aria-label="close sidebar" className="drawer-overlay"></label>
+                <div className="bg-base-200 text-base-content min-h-full w-80 p-4">
+                    <div className="flex flex-col h-full">
+                        {/* Header */}
+                        <div className="flex items-center justify-between p-4 border-b border-base-300">
+                            <h2 className="text-xl font-semibold">Filters</h2>
+                            <label
+                                htmlFor="my-drawer"
+                                className="btn btn-sm btn-ghost btn-circle"
+                                aria-label="close sidebar"
+                            >
+                                <X className="w-5 h-5" />
                             </label>
-                            <div className="space-y-2">
-                                {[
-                                    { value: 'landscape', label: 'Landscape' },
-                                    { value: 'portrait', label: 'Portrait' },
-                                    { value: 'square', label: 'Square' },
-                                ].map((option) => (
-                                    <label key={option.value} className="flex items-center space-x-3 cursor-pointer">
-                                        <input
-                                            type="radio"
-                                            name="orientation"
-                                            value={option.value}
-                                            checked={localFilters.orientation === option.value}
-                                            onChange={(e) => handleFilterChange('orientation', e.target.value)}
-                                            className="radio radio-primary"
-                                        />
-                                        <span className="text-sm">{option.label}</span>
-                                    </label>
-                                ))}
-                            </div>
                         </div>
 
-                        {/* Color Filter */}
-                        <div>
-                            <label className="text-sm font-medium text-base-content mb-3 block">
-                                Color
-                            </label>
-
-                            {/* Color Swatches */}
-                            <div className="grid grid-cols-6 gap-2 mb-4">
-                                {supportedColors.map((color) => (
-                                    <button
-                                        key={color.name}
-                                        onClick={() => handleFilterChange('color', color.hex)}
-                                        className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${localFilters.color === color.hex
-                                            ? 'border-primary ring-2 ring-primary ring-offset-2'
-                                            : 'border-base-300'
-                                            }`}
-                                        style={{ backgroundColor: color.hex }}
-                                        title={color.name}
-                                    >
-                                        {localFilters.color === color.hex && (
-                                            <Check className="w-4 h-4 text-white m-auto" />
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Custom Color Picker */}
-                            <div className="space-y-2">
-                                <label className="text-xs text-base-content/70">Custom Color</label>
-                                <div className="flex items-center space-x-2">
-                                    <input
-                                        type="color"
-                                        value={localFilters.customColor || '#000000'}
-                                        onChange={(e) => handleCustomColorChange(e.target.value)}
-                                        className="w-8 h-8 rounded border border-base-300 cursor-pointer"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="#ffffff"
-                                        value={localFilters.customColor}
-                                        onChange={(e) => handleCustomColorChange(e.target.value)}
-                                        className="input input-bordered input-sm flex-1"
-                                        pattern="^#[0-9A-Fa-f]{6}$"
-                                    />
+                        {/* Filter Content */}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-6">
+                            {/* Orientation Filter */}
+                            <div>
+                                <label className="text-sm font-medium text-base-content mb-3 block">
+                                    Orientation
+                                </label>
+                                <div className="space-y-2">
+                                    {[
+                                        { value: '', label: 'Any' },
+                                        { value: 'landscape', label: 'Landscape' },
+                                        { value: 'portrait', label: 'Portrait' },
+                                        { value: 'square', label: 'Square' },
+                                    ].map((option) => (
+                                        <label key={option.value} className="flex items-center space-x-3 cursor-pointer">
+                                            <input
+                                                name="orientation"
+                                                onChange={handleChange}
+                                                checked={formData.orientation === option.value}
+                                                type="radio"
+                                                value={option.value}
+                                                className="radio radio-primary"
+                                            />
+                                            <span className="text-sm">{option.label}</span>
+                                        </label>
+                                    ))}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Size Filter */}
-                        <div>
-                            <label className="text-sm font-medium text-base-content mb-3 block">
-                                Minimum Size
-                            </label>
-                            <select
-                                value={localFilters.size}
-                                onChange={(e) => handleFilterChange('size', e.target.value)}
-                                className="select select-bordered w-full"
-                            >
-                                <option value="">Any Size</option>
-                                {sizeOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
+                            {/* Color Filter */}
+                            <div>
+                                <label className="text-sm font-medium text-base-content mb-3 block">
+                                    Color
+                                </label>
 
-                    {/* Footer */}
-                    <div className="p-4 border-t border-base-300 space-y-2">
-                        <button
-                            onClick={clearFilters}
-                            className="btn btn-outline btn-sm w-full"
-                        >
-                            Clear All Filters
-                        </button>
-                        <button
-                            onClick={onClose}
-                            className="btn btn-primary btn-sm w-full"
-                        >
-                            Apply Filters
-                        </button>
+                                {/* Color Swatches */}
+                                <div className="grid grid-cols-6 gap-2 mb-4">
+                                    {supportedColors.map((color) => (
+                                        <button
+                                            onClick={() => {
+                                                const newFormData = { ...formData, color: color.hex };
+                                                setFormData(newFormData);
+                                                updateSearchParams(newFormData);
+                                            }}
+                                            key={color.name}
+                                            className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${formData.color === color.hex ? 'ring-2 ring-primary ring-offset-2' : ''
+                                                }`}
+                                            style={{ backgroundColor: color.hex }}
+                                            title={color.name}
+                                        >
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Custom Color Picker */}
+                                <div className="space-y-2">
+                                    <label className="text-xs text-base-content/70">Custom Color</label>
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            name="color"
+                                            onChange={handleChange}
+                                            value={formData.color.toUpperCase()}
+                                            type="color"
+                                            className="w-8 h-8 rounded border border-base-300 cursor-pointer"
+                                        />
+                                        <div className="relative flex-1">
+                                            <input
+                                                name="color"
+                                                type="text"
+                                                onChange={handleChange}
+                                                value={formData.color.toUpperCase()}
+                                                placeholder="Enter hex code"
+                                                className="input input-bordered input-sm w-full pr-8"
+                                                pattern="^#[0-9A-Fa-f]{6}$"
+                                            />
+                                            {formData.color && (
+                                                <button
+                                                    onClick={() => {
+                                                        const newFormData = { ...formData, color: '' };
+                                                        setFormData(newFormData);
+                                                        updateSearchParams(newFormData);
+                                                    }}
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 rounded-full text-base-content/70 hover:text-base-content hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-base-300"
+                                                    title="Clear color"
+                                                >
+                                                    <X size={14} />
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Size Filter */}
+                            <div>
+                                <label className="text-sm font-medium text-base-content mb-3 block">
+                                    Minimum Size
+                                </label>
+                                <select
+                                    name="size"
+                                    onChange={handleChange}
+                                    value={formData.size}
+                                    className="select select-bordered w-full"
+                                >
+                                    <option value="">Any Size</option>
+                                    {sizeOptions.map((option) => (
+                                        <option key={option.value} value={option.value}>
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </>
-    );
+        </div>
+    )
 }
