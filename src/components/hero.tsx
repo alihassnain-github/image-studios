@@ -64,7 +64,7 @@ export default function Hero() {
                     {/* Category Chips */}
                     <div className="flex flex-wrap justify-center gap-3">
                         {categoryChips.map((category) => (
-                            <Link key={category.name} href={`/search/${category.name}`}>
+                            <Link key={category.name} href={`/search/${category.name}`} prefetch={false}>
                                 <button
                                     className="btn btn-outline btn-sm text-white border-white hover:bg-white hover:text-primary"
                                 >

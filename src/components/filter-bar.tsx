@@ -37,6 +37,8 @@ export default function FilterBar() {
         size: '',
     });
 
+    const appliedFiltersCount = Object.values(formData).filter(Boolean).length;
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         const newFormData = { ...formData, [name]: value };
@@ -55,8 +57,6 @@ export default function FilterBar() {
         }
 
         if (data.color) {
-            console.log(data.color);
-
             const isValidHex = /^#[0-9A-Fa-f]{6}$/.test(data.color);
             if (isValidHex) {
                 params.set('color', data.color.replace('#', '').toUpperCase());
@@ -91,7 +91,9 @@ export default function FilterBar() {
                 <label htmlFor="my-drawer" className="btn btn-primary btn-soft drawer-button">
                     <ListFilter className="w-4 h-4" />
                     Filters
-                    <div className="badge badge-sm badge-primary">02</div>
+                    {appliedFiltersCount > 0 && (
+                        <div className="badge badge-sm badge-primary">{appliedFiltersCount.toString().padStart(2, "0")}</div>
+                    )}
                 </label>
             </div>
             <div className="drawer-side z-30">

@@ -1,6 +1,47 @@
-import SearchSkeleton from '@/components/skeletons/search-skeleton';
+import type { Metadata, ResolvingMetadata } from 'next'
+import MasonryGrid from '@/components/masonry-grid';
 import FilterBar from '@/components/filter-bar';
-import { toTitleCase } from '@/lib/format';
+import { formatNumber, normalizeParam, toTitleCase } from '@/utils/format';
+import { getData } from '@/utils/api-helpers';
+
+type Props = {
+  params: Promise<{ query: string }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+
+  const { query } = await params
+
+  const { orientation, color, size } = (await searchParams);
+
+  const filters = {
+    orientation: normalizeParam(orientation),
+    size: normalizeParam(size),
+    color: normalizeParam(color),
+  };
+
+  const queryString = new URLSearchParams({
+    query,
+    ...(filters.orientation && { orientation: filters.orientation }),
+    ...(filters.size && { size: filters.size }),
+    ...(filters.color && { color: filters.color }),
+  }).toString();
+
+  const data = await getData(`${process.env.PEXELS_API_URI}/search?${queryString}`, "SearchPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
+
+  const readableQuery = toTitleCase(decodeURIComponent(query));
+
+  return {
+    title: `Free ${readableQuery} Photos | Image Studios`,
+    description: `Discover ${formatNumber(
+      data.total_results
+    )} free ${readableQuery} photos. Download high-quality ${readableQuery} images in landscape, portrait, and square orientations.`,
+  }
+}
 
 export default async function SearchPage({
   params,
@@ -12,7 +53,24 @@ export default async function SearchPage({
 
   const { query } = await params;
 
-  const filters = (await searchParams);
+  const { orientation, color, size } = (await searchParams);
+
+  const filters = {
+    orientation: normalizeParam(orientation),
+    size: normalizeParam(size),
+    color: normalizeParam(color),
+  };
+
+  const queryString = new URLSearchParams({
+    query,
+    ...(filters.orientation && { orientation: filters.orientation }),
+    ...(filters.size && { size: filters.size }),
+    ...(filters.color && { color: filters.color }),
+  }).toString();
+
+  const data = await getData(`${process.env.PEXELS_API_URI}/search?${queryString}`, "SearchPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
+
+  console.log(data);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -35,12 +93,12 @@ export default async function SearchPage({
             <FilterBar />
 
             <button className="btn">
-              Photos <div className="badge badge-sm badge-primary">155.7K</div>
+              Photos <div className="badge badge-sm badge-primary">{formatNumber(data.total_results)}</div>
             </button>
 
           </div>
 
-          <SearchSkeleton />
+          <MasonryGrid images={data.photos} />
 
         </div>
       </main>
