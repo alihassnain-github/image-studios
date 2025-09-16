@@ -3,6 +3,8 @@ import MasonryGrid from '@/components/masonry-grid';
 import FilterBar from '@/components/filter-bar';
 import { formatNumber, normalizeParam, toTitleCase } from '@/utils/format';
 import { getData } from '@/utils/api-helpers';
+import { Suspense } from 'react';
+import SearchSkeleton from '@/components/skeletons/search-skeleton';
 
 type Props = {
   params: Promise<{ query: string }>
@@ -98,7 +100,9 @@ export default async function SearchPage({
 
           </div>
 
-          <MasonryGrid images={data.photos} />
+          <Suspense fallback={<SearchSkeleton />}>
+            <MasonryGrid dataFetchingQuery={queryString} type={"image"} />
+          </Suspense>
 
         </div>
       </main>
