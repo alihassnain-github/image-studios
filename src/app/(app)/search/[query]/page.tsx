@@ -1,10 +1,7 @@
 import type { Metadata, ResolvingMetadata } from 'next'
 import MasonryGrid from '@/components/masonry-grid';
-import FilterBar from '@/components/filter-bar';
 import { formatNumber, normalizeParam, toTitleCase } from '@/utils/format';
 import { getData } from '@/utils/api-helpers';
-import { Suspense } from 'react';
-import SearchSkeleton from '@/components/skeletons/search-skeleton';
 
 type Props = {
   params: Promise<{ query: string }>
@@ -70,6 +67,9 @@ export default async function SearchPage({
     ...(filters.color && { color: filters.color }),
   }).toString();
 
+  console.log(queryString);
+
+
   const data = await getData(`${process.env.PEXELS_API_URI}/search?${queryString}`, "SearchPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
   console.log(data);
@@ -88,21 +88,7 @@ export default async function SearchPage({
             </h1>
           </div>
 
-          {/* Stat Bar and Filter Button */}
-          <div className="flex items-center justify-between gap-4 mb-6">
-
-            {/* Filter Bar */}
-            <FilterBar />
-
-            <button className="btn">
-              Photos <div className="badge badge-sm badge-primary">{formatNumber(data.total_results)}</div>
-            </button>
-
-          </div>
-
-          <Suspense fallback={<SearchSkeleton />}>
-            <MasonryGrid dataFetchingQuery={queryString} type={"image"} />
-          </Suspense>
+          <MasonryGrid contentType={"image"} initialData={data} />
 
         </div>
       </main>

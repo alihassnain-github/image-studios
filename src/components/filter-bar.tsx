@@ -1,7 +1,7 @@
 "use client";
 
 import { ListFilter, X } from "lucide-react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const sizeOptions = [
@@ -27,7 +27,6 @@ const supportedColors = [
 
 export default function FilterBar() {
 
-    const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
@@ -71,7 +70,8 @@ export default function FilterBar() {
             params.delete('size');
         }
 
-        router.replace(`${pathname}?${params.toString()}`);
+        // router.replace(`${pathname}?${params.toString()}`);
+        window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
     };
 
 
