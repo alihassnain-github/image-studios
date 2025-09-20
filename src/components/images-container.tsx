@@ -5,27 +5,35 @@ import ImageCard from "@/components/image-card";
 import { PexelsPhoto, PexelsSearchResponse } from "@/types/image";
 import FilterBar from "./filter-bar";
 import { formatNumber } from "@/utils/format";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getData } from "@/utils/api-helpers";
 import SearchSkeleton from "./skeletons/search-skeleton";
 import useThrottle from "@/hooks/useThrottle";
+import { useToast } from "@/contexts/ToastContext";
+import { RotateCcw, SearchX } from "lucide-react";
 
 export interface MasonryGridProps {
     initialData: PexelsSearchResponse;
-    contentType?: "image" | "video";
 }
 
-export default function MasonryGrid({ initialData, contentType }: MasonryGridProps) {
+export default function ImagesContainer({ initialData }: MasonryGridProps) {
+
+    const { addToast } = useToast();
 
     const [data, setData] = useState<PexelsSearchResponse>(initialData);
     const [loading, setLoading] = useState({
         initialLoading: false,
         onScrollLoading: false,
     });
+    const [error, setError] = useState<Record<string, string | null>>({
+        initialError: null,
+        onScrollError: null,
+    });
 
     const isInitialMount = useRef(true);
     const observerRef = useRef<HTMLDivElement | null>(null);
 
+    const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
 
@@ -52,10 +60,13 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
         const fetchData = async () => {
             try {
                 setLoading((prev) => ({ ...prev, initialLoading: true }));
+                setError((prev) => ({ ...prev, initialError: null }));
                 const data = await getData(`${process.env.NEXT_PUBLIC_PEXELS_API_URI}/search?${queryString}`, "MasonryGrid", { headers: { Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY } });
                 setData(data);
             } catch (error) {
                 console.error(error);
+                addToast({ message: "Failed to load images. Please try again.", position: "bottom-right", variant: "danger" });
+                setError((prev) => ({ ...prev, initialError: "Failed to load images. Please try again." }));
             } finally {
                 setLoading((prev) => ({ ...prev, initialLoading: false }));
             }
@@ -69,6 +80,7 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
         if (!data.next_page) return; // No more results
         try {
             setLoading((prev) => ({ ...prev, onScrollLoading: true }));
+            setError((prev) => ({ ...prev, onScrollError: null }));
             const nextData = await getData(data.next_page, "MasonryGridScroll", {
                 headers: { Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY },
             });
@@ -80,6 +92,8 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
             }));
         } catch (error) {
             console.error(error);
+            addToast({ message: "Failed to load more images. Please try again.", position: "bottom-right", variant: "danger" });
+            setError((prev) => ({ ...prev, onScrollError: "Failed to load more images. Please try again." }));
         } finally {
             setLoading((prev) => ({ ...prev, onScrollLoading: false }));
         }
@@ -128,7 +142,7 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
                 <div
                     className="columns-2 lg:columns-3 gap-4"
                 >
-                    {contentType === "image" && data.photos.map((img: PexelsPhoto) => (
+                    {data.photos.map((img: PexelsPhoto) => (
                         <ImageCard
                             key={img.id}
                             src={img.src.large2x || img.src.large || img.src.medium}
@@ -140,6 +154,24 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
                             downloadUrl={img.src.original}
                         />
                     ))}
+                </div>
+            )}
+
+            {!loading.initialLoading && data.photos.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-20 px-4">
+                    <div className="bg-gray-100 rounded-full flex items-center justify-center w-24 h-24">
+                        <SearchX className="text-gray-500 w-12 h-12" />
+                    </div>
+                    <div className="my-8 text-center">
+                        <h4 className="font-bold">No matching search results</h4>
+                        <p className="text-gray-600 dark:text-gray-400 text-center max-w-md">
+                            Try again using more general search terms
+                        </p>
+                    </div>
+                    <button className="btn btn-primary" onClick={() => { router.replace(pathname) }}>
+                        <RotateCcw className="w-4 h-4" />
+                        Clear All Filters
+                    </button>
                 </div>
             )}
 
@@ -156,8 +188,12 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
                 </div>
             )}
 
+            {error.onScrollError && (
+                <div className="flex items-center justify-center py-4">
+                    <button className="btn btn-outline" onClick={fetchNextPage}>Load More</button>
+                </div>
+            )}
+
         </>
     );
 }
-
-

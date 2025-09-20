@@ -1,7 +1,7 @@
 import type { Metadata, ResolvingMetadata } from 'next'
-import MasonryGrid from '@/components/masonry-grid';
 import { formatNumber, normalizeParam, toTitleCase } from '@/utils/format';
 import { getData } from '@/utils/api-helpers';
+import ImagesContainer from '@/components/images-container';
 
 type Props = {
   params: Promise<{ query: string }>
@@ -86,7 +86,7 @@ export default async function SearchPage({
             </h1>
           </div>
 
-          <MasonryGrid contentType={"image"} initialData={data} />
+          <ImagesContainer initialData={data} />
 
         </div>
       </main>
