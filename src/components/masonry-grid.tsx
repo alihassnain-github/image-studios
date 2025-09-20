@@ -8,6 +8,7 @@ import { formatNumber } from "@/utils/format";
 import { usePathname, useSearchParams } from "next/navigation";
 import { getData } from "@/utils/api-helpers";
 import SearchSkeleton from "./skeletons/search-skeleton";
+import useThrottle from "@/hooks/useThrottle";
 
 export interface MasonryGridProps {
     initialData: PexelsSearchResponse;
@@ -17,8 +18,13 @@ export interface MasonryGridProps {
 export default function MasonryGrid({ initialData, contentType }: MasonryGridProps) {
 
     const [data, setData] = useState<PexelsSearchResponse>(initialData);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState({
+        initialLoading: false,
+        onScrollLoading: false,
+    });
+
     const isInitialMount = useRef(true);
+    const observerRef = useRef<HTMLDivElement | null>(null);
 
     const pathname = usePathname();
     const searchParams = useSearchParams();
@@ -35,7 +41,7 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
         const size = searchParams.get('size');
 
         const params: Record<string, string> = {
-            query: decodeURIComponent(pathname.split("/").pop()!),
+            query: pathname.split("/").pop()!,
         };
         if (orientation) params.orientation = orientation;
         if (size) params.size = size;
@@ -45,19 +51,62 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
 
         const fetchData = async () => {
             try {
-                setLoading(true);
+                setLoading((prev) => ({ ...prev, initialLoading: true }));
                 const data = await getData(`${process.env.NEXT_PUBLIC_PEXELS_API_URI}/search?${queryString}`, "MasonryGrid", { headers: { Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY } });
                 setData(data);
             } catch (error) {
                 console.error(error);
             } finally {
-                setLoading(false);
+                setLoading((prev) => ({ ...prev, initialLoading: false }));
             }
         }
 
         fetchData();
 
     }, [searchParams])
+
+    const fetchNextPage = async () => {
+        if (!data.next_page) return; // No more results
+        try {
+            setLoading((prev) => ({ ...prev, onScrollLoading: true }));
+            const nextData = await getData(data.next_page, "MasonryGridScroll", {
+                headers: { Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY },
+            });
+
+            // Append photos but keep other info updated
+            setData((prev) => ({
+                ...nextData,
+                photos: [...prev.photos, ...nextData.photos],
+            }));
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading((prev) => ({ ...prev, onScrollLoading: false }));
+        }
+    };
+
+    const throttledFetch = useThrottle(fetchNextPage, 2000);
+
+    useEffect(() => {
+        const sentinel = observerRef.current;
+        if (!sentinel) return;
+
+        const observer = new IntersectionObserver(
+            (entries) => {
+                const [entry] = entries;
+                if (entry.isIntersecting && !loading.onScrollLoading) {
+                    throttledFetch();
+                }
+            },
+            { threshold: 0.1 }
+        );
+
+        observer.observe(sentinel);
+
+        return () => {
+            if (sentinel) observer.unobserve(sentinel);
+        };
+    }, [throttledFetch, loading.onScrollLoading]);
 
     return (
         <>
@@ -72,7 +121,8 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
                 </button>
 
             </div>
-            {loading ? (
+
+            {loading.initialLoading ? (
                 <SearchSkeleton />
             ) : (
                 <div
@@ -92,6 +142,20 @@ export default function MasonryGrid({ initialData, contentType }: MasonryGridPro
                     ))}
                 </div>
             )}
+
+            {/* Loader trigger */}
+            <div ref={observerRef} className="h-10" />
+
+            {loading.onScrollLoading && (
+                <div className="flex items-center justify-center space-x-3">
+                    <span className="loading loading-ring loading-xl"></span>
+                    <span className="loading loading-ring loading-xl"></span>
+                    <span className="loading loading-ring loading-xl"></span>
+                    <span className="loading loading-ring loading-xl"></span>
+                    <span className="loading loading-ring loading-xl"></span>
+                </div>
+            )}
+
         </>
     );
 }

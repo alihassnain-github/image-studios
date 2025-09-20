@@ -65,10 +65,8 @@ export default async function SearchPage({
     ...(filters.orientation && { orientation: filters.orientation }),
     ...(filters.size && { size: filters.size }),
     ...(filters.color && { color: filters.color }),
+    per_page: "30",
   }).toString();
-
-  console.log(queryString);
-
 
   const data = await getData(`${process.env.PEXELS_API_URI}/search?${queryString}`, "SearchPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
