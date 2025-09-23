@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { memo } from "react";
 
 type Photographer = {
   name: string;
@@ -20,8 +20,7 @@ export interface ImageCardProps {
   downloadUrl?: string;
 }
 
-export default function ImageCard({ src, alt, photographer, width, height, downloadUrl, avgColor }: ImageCardProps) {
-
+const ImageCard = memo(function ImageCard({ src, alt, photographer, width, height, downloadUrl, avgColor }: ImageCardProps) {
   return (
     <figure className="group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100">
       <div
@@ -82,6 +81,6 @@ export default function ImageCard({ src, alt, photographer, width, height, downl
       </div>
     </figure>
   );
-}
+})
 
-
+export default ImageCard;
