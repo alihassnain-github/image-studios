@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import ImageCard from "@/components/image-card";
-import { PexelsPhoto, PexelsSearchResponse } from "@/types/image";
+import VideoCard from "@/components/video-card";
+import { PexelsVideo, PexelsVideoSearchResponse } from "@/types/video";
 import FilterBar from "./filter-bar";
 import { formatNumber } from "@/utils/format";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -12,15 +12,15 @@ import useThrottle from "@/hooks/useThrottle";
 import { useToast } from "@/contexts/ToastContext";
 import { RotateCcw, SearchX } from "lucide-react";
 
-export interface ImagesContainerProps {
-    initialData: PexelsSearchResponse;
+export interface VideosContainerProps {
+    initialData: PexelsVideoSearchResponse;
 }
 
-export default function ImagesContainer({ initialData }: ImagesContainerProps) {
+export default function VideosContainer({ initialData }: VideosContainerProps) {
 
     const { addToast } = useToast();
 
-    const [data, setData] = useState<PexelsSearchResponse>(initialData);
+    const [data, setData] = useState<PexelsVideoSearchResponse>(initialData);
     const [loading, setLoading] = useState({
         initialLoading: false,
         onScrollLoading: false,
@@ -45,7 +45,6 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
         }
 
         const orientation = searchParams.get('orientation');
-        const color = searchParams.get('color');
         const size = searchParams.get('size');
 
         const params: Record<string, string> = {
@@ -53,7 +52,6 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
         };
         if (orientation) params.orientation = orientation;
         if (size) params.size = size;
-        if (color) params.color = color;
 
         const queryString = new URLSearchParams(params).toString();
 
@@ -61,12 +59,12 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
             try {
                 setLoading((prev) => ({ ...prev, initialLoading: true }));
                 setError((prev) => ({ ...prev, initialError: null }));
-                const data = await getData(`${process.env.NEXT_PUBLIC_PEXELS_API_URI}/search?${queryString}`, "ImagesContainer", { headers: { Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY } });
+                const data = await getData(`${process.env.NEXT_PUBLIC_PEXELS_API_URI}/videos/search?${queryString}`, "VideosContainer", { headers: { Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY } });
                 setData(data);
             } catch (error) {
                 console.error(error);
-                addToast({ message: "Failed to load images. Please try again.", position: "bottom-right", variant: "danger" });
-                setError((prev) => ({ ...prev, initialError: "Failed to load images. Please try again." }));
+                addToast({ message: "Failed to load videos. Please try again.", position: "bottom-right", variant: "danger" });
+                setError((prev) => ({ ...prev, initialError: "Failed to load videos. Please try again." }));
             } finally {
                 setLoading((prev) => ({ ...prev, initialLoading: false }));
             }
@@ -81,19 +79,19 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
         try {
             setLoading((prev) => ({ ...prev, onScrollLoading: true }));
             setError((prev) => ({ ...prev, onScrollError: null }));
-            const nextData = await getData(data.next_page, "ImagesContainerScroll", {
+            const nextData = await getData(data.next_page, "VideosContainerScroll", {
                 headers: { Authorization: process.env.NEXT_PUBLIC_PEXELS_API_KEY },
             });
 
-            // Append photos but keep other info updated
+            // Append videos but keep other info updated
             setData((prev) => ({
                 ...nextData,
-                photos: [...prev.photos, ...nextData.photos],
+                videos: [...prev.videos, ...nextData.videos],
             }));
         } catch (error) {
             console.error(error);
-            addToast({ message: "Failed to load more images. Please try again.", position: "bottom-right", variant: "danger" });
-            setError((prev) => ({ ...prev, onScrollError: "Failed to load more images. Please try again." }));
+            addToast({ message: "Failed to load more videos. Please try again.", position: "bottom-right", variant: "danger" });
+            setError((prev) => ({ ...prev, onScrollError: "Failed to load more videos. Please try again." }));
         } finally {
             setLoading((prev) => ({ ...prev, onScrollLoading: false }));
         }
@@ -131,7 +129,7 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                 <FilterBar />
 
                 <button className="btn">
-                    Photos <div className="badge badge-sm badge-primary">{formatNumber(data.total_results)}</div>
+                    Videos <div className="badge badge-sm badge-primary">{formatNumber(data.total_results)}</div>
                 </button>
 
             </div>
@@ -142,22 +140,18 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                 <div
                     className="columns-2 lg:columns-3 gap-4"
                 >
-                    {data.photos.map((img: PexelsPhoto) => (
-                        <ImageCard
-                            key={img.id}
-                            src={img.src.large2x || img.src.large || img.src.medium}
-                            alt={img.alt || "Image"}
-                            width={img.width}
-                            height={img.height}
-                            avgColor={img.avg_color}
-                            photographer={{ name: img.photographer, url: img.photographer_url, id: img.photographer_id }}
-                            downloadUrl={img.src.original}
+                    {data.videos.map((video: PexelsVideo) => (
+                        <VideoCard
+                            key={video.id}
+                            video={video}
+                            photographer={{ name: video.user.name, url: video.user.url, id: video.user.id }}
+                            downloadUrl={video.video_files.find(file => file.quality === "hd")?.link || video.video_files[0]?.link}
                         />
                     ))}
                 </div>
             )}
 
-            {!loading.initialLoading && data.photos.length === 0 && (
+            {!loading.initialLoading && data.videos.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-20 px-4">
                     <div className="bg-gray-100 rounded-full flex items-center justify-center w-24 h-24">
                         <SearchX className="text-gray-500 w-12 h-12" />

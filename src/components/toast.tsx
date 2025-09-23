@@ -35,29 +35,19 @@ const variantIcons: Record<string, JSX.Element> = {
     </svg>,
 }
 
-const positionClasses: Record<string, string> = {
-    'top-left': 'top-4 left-4',
-    'top-right': 'top-4 right-4',
-    'bottom-left': 'bottom-4 left-4',
-    'bottom-right': 'bottom-4 right-4',
-    'top-center': 'top-4 left-1/2 transform -translate-x-1/2',
-    'bottom-center': 'bottom-4 left-1/2 transform -translate-x-1/2',
-}
-
 export function Toast({
     message,
     variant = 'default',
-    position = 'bottom-left',
     onClose,
 }: ToastProps) {
     return (
         <div
-            className={`toast fixed z-50 ${positionClasses[position]}`}
+            className="toast static"
         >
             <div className={`alert ${variantClasses[variant]} flex items-center gap-2`}>
                 {variantIcons[variant]}
                 <span>{message}</span>
-                <button className="ml-2" onClick={onClose}>
+                <button className="ml-2 cursor-pointer" onClick={onClose}>
                     <X size={18} />
                 </button>
             </div>

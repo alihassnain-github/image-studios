@@ -43,7 +43,7 @@ export default function ImageCard({ src, alt, photographer, width, height, downl
         {/* Hover overlay */}
         <div className="pointer-events-none absolute inset-0 flex flex-col justify-between opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           {/* subtle backdrop */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/0 to-black/30 backdrop-blur-[1px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/0 to-black/30" />
 
           {/* top actions */}
           <div className="relative z-10 flex items-start justify-end p-2 md:p-4">
@@ -70,7 +70,7 @@ export default function ImageCard({ src, alt, photographer, width, height, downl
                 href={photographer.url}
                 target="_blank"
                 rel="noreferrer"
-                className="pointer-events-auto flex items-center gap-2"
+                className="pointer-events-auto flex items-center gap-2 border-b-1 border-white"
               >
                 <span className="text-xs font-bold md:text-sm text-white drop-shadow-sm">
                   {photographer.name}

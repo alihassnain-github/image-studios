@@ -25,6 +25,15 @@ interface ToastContextType {
     removeToast: (id: string) => void
 }
 
+const positionClasses: Record<string, string> = {
+    'top-left': 'top-4 left-4',
+    'top-right': 'top-4 right-4',
+    'bottom-left': 'bottom-4 left-4',
+    'bottom-right': 'bottom-4 right-4',
+    'top-center': 'top-4 left-1/2 transform -translate-x-1/2',
+    'bottom-center': 'bottom-4 left-1/2 transform -translate-x-1/2',
+}
+
 const ToastContext = createContext<ToastContextType | undefined>(undefined)
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -53,8 +62,12 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         <ToastContext.Provider value={{ addToast, removeToast }}>
             {children}
             {/* Render all toasts */}
-            {toasts.map((toast) => (
-                <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
+            {Object.keys(positionClasses).map((position) => (
+                <div key={position} className={`fixed ${positionClasses[position]} z-50 flex flex-col gap-2`}>
+                    {toasts.filter((toast) => toast.position === position).map((toast) => (
+                        <Toast key={toast.id} {...toast} onClose={() => removeToast(toast.id)} />
+                    ))}
+                </div>
             ))}
         </ToastContext.Provider>
     )

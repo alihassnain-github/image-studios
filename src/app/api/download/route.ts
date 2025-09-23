@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
     // Extract filename from URL (default fallback "image")
     const urlObj = new URL(url);
     const pathname = urlObj.pathname;
-    const originalName = pathname.substring(pathname.lastIndexOf("/") + 1) || "image";
+    const originalName = pathname.substring(pathname.lastIndexOf("/") + 1) || "file";
 
     return new Response(blob, {
         headers: {
