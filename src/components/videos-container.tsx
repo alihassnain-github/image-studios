@@ -11,6 +11,7 @@ import SearchSkeleton from "./skeletons/search-skeleton";
 import useThrottle from "@/hooks/useThrottle";
 import { useToast } from "@/contexts/ToastContext";
 import { RotateCcw, SearchX } from "lucide-react";
+import { VirtuosoMasonry } from "@virtuoso.dev/masonry";
 
 export interface VideosContainerProps {
     initialData: PexelsVideoSearchResponse;
@@ -137,18 +138,19 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
             {loading.initialLoading ? (
                 <SearchSkeleton />
             ) : (
-                <div
-                    className="columns-2 lg:columns-3 gap-4"
-                >
-                    {data.videos.map((video: PexelsVideo) => (
+                <VirtuosoMasonry
+                    data={data.videos}
+                    ItemContent={({ data: video }: { data: PexelsVideo }) => (
                         <VideoCard
                             key={video.id}
                             video={video}
                             photographer={{ name: video.user.name, url: video.user.url, id: video.user.id }}
                             downloadUrl={video.video_files.find(file => file.quality === "hd")?.link || video.video_files[0]?.link}
                         />
-                    ))}
-                </div>
+                    )}
+                    columnCount={3}
+                    className="columns-2 lg:columns-3 gap-4"
+                />
             )}
 
             {!loading.initialLoading && data.videos.length === 0 && (

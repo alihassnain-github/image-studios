@@ -11,6 +11,7 @@ import SearchSkeleton from "./skeletons/search-skeleton";
 import useThrottle from "@/hooks/useThrottle";
 import { useToast } from "@/contexts/ToastContext";
 import { RotateCcw, SearchX } from "lucide-react";
+import { VirtuosoMasonry } from "@virtuoso.dev/masonry";
 
 export interface ImagesContainerProps {
     initialData: PexelsSearchResponse;
@@ -139,10 +140,9 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
             {loading.initialLoading ? (
                 <SearchSkeleton />
             ) : (
-                <div
-                    className="columns-2 lg:columns-3 gap-4"
-                >
-                    {data.photos.map((img: PexelsPhoto) => (
+                <VirtuosoMasonry
+                    data={data.photos}
+                    ItemContent={({ data: img }: { data: PexelsPhoto }) => (
                         <ImageCard
                             key={img.id}
                             src={img.src.large2x || img.src.large || img.src.medium}
@@ -153,8 +153,10 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                             photographer={{ name: img.photographer, url: img.photographer_url, id: img.photographer_id }}
                             downloadUrl={img.src.original}
                         />
-                    ))}
-                </div>
+                    )}
+                    columnCount={3}
+                    className="columns-2 lg:columns-3 gap-4"
+                />
             )}
 
             {!loading.initialLoading && data.photos.length === 0 && (
