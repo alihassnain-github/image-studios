@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { memo } from "react";
 
 type Photographer = {
@@ -11,6 +12,7 @@ type Photographer = {
 };
 
 export interface ImageCardProps {
+  id: number,
   src: string;
   alt: string;
   photographer?: Photographer | null;
@@ -20,9 +22,12 @@ export interface ImageCardProps {
   downloadUrl?: string;
 }
 
-const ImageCard = memo(function ImageCard({ src, alt, photographer, width, height, downloadUrl, avgColor }: ImageCardProps) {
+const ImageCard = memo(function ImageCard({ id, src, alt, photographer, width, height, downloadUrl, avgColor }: ImageCardProps) {
+
+  const router = useRouter();
+
   return (
-    <figure className="group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100">
+    <figure onClick={() => router.push(`/photo/${id}`)} className="cursor-pointer group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100">
       <div
         className="relative w-full"
         style={{

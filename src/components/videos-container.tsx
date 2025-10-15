@@ -148,7 +148,7 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
                             downloadUrl={video.video_files.find(file => file.quality === "hd")?.link || video.video_files[0]?.link}
                         />
                     )}
-                    columnCount={3}
+                    columnCount={window.innerWidth < 1024 ? 2 : 3}
                     className="columns-2 lg:columns-3 gap-4"
                 />
             )}

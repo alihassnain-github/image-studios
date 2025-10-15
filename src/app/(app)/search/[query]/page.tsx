@@ -72,6 +72,7 @@ export default async function SearchPage({
 
   console.log(data);
 
+
   return (
     <div className="min-h-screen flex flex-col">
 

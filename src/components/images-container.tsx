@@ -12,6 +12,7 @@ import useThrottle from "@/hooks/useThrottle";
 import { useToast } from "@/contexts/ToastContext";
 import { RotateCcw, SearchX } from "lucide-react";
 import { VirtuosoMasonry } from "@virtuoso.dev/masonry";
+import Link from "next/link";
 
 export interface ImagesContainerProps {
     initialData: PexelsSearchResponse;
@@ -131,9 +132,9 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                 {/* Filter Bar */}
                 <FilterBar />
 
-                <button className="btn">
+                <Link href={""} className="btn">
                     Photos <div className="badge badge-sm badge-primary">{formatNumber(data.total_results)}</div>
-                </button>
+                </Link>
 
             </div>
 
@@ -145,6 +146,7 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                     ItemContent={({ data: img }: { data: PexelsPhoto }) => (
                         <ImageCard
                             key={img.id}
+                            id={img.id}
                             src={img.src.large2x || img.src.large || img.src.medium}
                             alt={img.alt || "Image"}
                             width={img.width}
@@ -154,8 +156,9 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                             downloadUrl={img.src.original}
                         />
                     )}
-                    columnCount={3}
-                    className="columns-2 lg:columns-3 gap-4"
+                    columnCount={window.innerWidth < 1024 ? 2 : 3}
+                    style={{ overflowY: "auto" }}
+                    className="gap-4"
                 />
             )}
 
@@ -181,12 +184,24 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
             <div ref={observerRef} className="h-10" />
 
             {loading.onScrollLoading && (
-                <div className="flex items-center justify-center space-x-3">
-                    <span className="loading loading-ring loading-xl"></span>
-                    <span className="loading loading-ring loading-xl"></span>
-                    <span className="loading loading-ring loading-xl"></span>
-                    <span className="loading loading-ring loading-xl"></span>
-                    <span className="loading loading-ring loading-xl"></span>
+                // <div className="flex items-center justify-center space-x-3">
+                //     <span className="loading loading-ring loading-xl"></span>
+                //     <span className="loading loading-ring loading-xl"></span>
+                //     <span className="loading loading-ring loading-xl"></span>
+                //     <span className="loading loading-ring loading-xl"></span>
+                //     <span className="loading loading-ring loading-xl"></span>
+                // </div>
+                <div className="flex gap-2">
+                    <span className="w-[13px] h-[13px] rounded-full bg-gray-300 animate-[ellipsis_1.4s_infinite_ease-in-out_both]" />
+                    <span className="w-[13px] h-[13px] rounded-full bg-gray-300 animate-[ellipsis_1.4s_infinite_ease-in-out_both] [animation-delay:-0.16s]" />
+                    <span className="w-[13px] h-[13px] rounded-full bg-gray-300 animate-[ellipsis_1.4s_infinite_ease-in-out_both] [animation-delay:-0.32s]" />
+
+                    <style>{`
+        @keyframes ellipsis {
+          0%, 80%, 100% { opacity: 0; }
+          40% { opacity: 1; }
+        }
+      `}</style>
                 </div>
             )}
 

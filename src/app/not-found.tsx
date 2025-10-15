@@ -1,4 +1,3 @@
-import { Home } from "lucide-react";
 import Link from "next/link";
 import type { Metadata } from "next";
 
@@ -6,8 +5,6 @@ export const metadata: Metadata = {
     title: "Page Not Found - Image Studios",
     description: "The page you're looking for doesn't exist. Return to Image Studios to discover amazing free stock photos and videos.",
 };
-
-const dynamic = "Trending";
 
 export default function NotFound() {
     return (
