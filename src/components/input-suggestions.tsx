@@ -1,19 +1,42 @@
 "use client";
 
+import debounce from "@/hooks/useDebounce";
 import { clearSearchHistory, getSearchHistory } from "@/utils/format";
 import { ArrowUpRight, BrushCleaning, Search } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-export default function InputSuggestions({ className }: { className?: string }) {
+export default function InputSuggestions({ input, className }: { input: string, className?: string }) {
 
     const [searchHistory, setSearchHistory] = useState<string[]>(getSearchHistory());
+    const [suggestions, setSuggestions] = useState<string[]>([]);
 
     function clearHistory() {
         clearSearchHistory();
         setSearchHistory([]);
     }
+
+    const fetchSuggestions = async () => {
+        try {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_DATAMUSE_API_URI}/sug?s=${input}`);
+            const keywords = await response.json();
+            setSuggestions([...keywords.slice(0, 6)]);
+        } catch (error) {
+            console.error("Error fetching keyword: ", error);
+        }
+    }
+
+    const debouncedFetch = useMemo(() => debounce(fetchSuggestions, 500), []);
+
+    useEffect(() => {
+        debouncedFetch();
+    }, [input, debouncedFetch])
+
+    useEffect(() => {
+        console.log(suggestions);
+
+    }, [suggestions])
 
     return (
         <div

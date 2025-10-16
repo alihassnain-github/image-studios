@@ -82,7 +82,7 @@ export default function SearchBar() {
 
             {/* history & suggestion Component */}
             {isOpen && (
-                <InputSuggestions />
+                <InputSuggestions input={searchQuery.value} />
             )}
 
         </form>
