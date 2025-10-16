@@ -4,18 +4,44 @@ import { useUser, useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { useState } from "react";
 import ProfileModal from "./profile-modal";
-import Image from "next/image";
-import { usePathname } from 'next/navigation';
-import { Search, X } from "lucide-react";
+import { usePathname, useRouter } from 'next/navigation';
+import { Clapperboard, Search, X, Image } from "lucide-react";
+import { saveSearchHistory } from "@/utils/format";
+import dynamic from "next/dynamic";
+
+const InputSuggestions = dynamic(() => import("./input-suggestions"), { ssr: false })
+
 
 export default function Navbar() {
 
     const pathname = usePathname();
+    const router = useRouter();
 
     const { user } = useUser()
     const { signOut } = useClerk()
+
+    const [isOpen, setIsOpen] = useState(false);
     const [isProfileModalOpen, setIsProfileModalOpen] = useState(false)
     const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false)
+    const [searchQuery, setSearchQuery] = useState({
+        value: "",
+        type: "photos",
+    });
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        const query = searchQuery.value.trim();
+        if (!query) return;
+
+        saveSearchHistory(query);
+
+        // Navigate to search results page
+        const path = searchQuery.type === "videos"
+            ? `/search/videos/${encodeURIComponent(query)}`
+            : `/search/${encodeURIComponent(query)}`;
+
+        router.push(path);
+    };
 
     return (
         <nav className="navbar bg-base-100 shadow-lg sticky top-0 z-20">
@@ -34,13 +60,54 @@ export default function Navbar() {
                 {
                     pathname !== '/' && (
                         <div className="hidden md:flex justify-center w-full">
-                            <form className="w-full max-w-xl">
-                                <label className="input input-bordered flex items-center gap-2 w-full">
-                                    <input type="text" className="grow" placeholder="Search photos" />
-                                    <button type="button" className="btn btn-circle btn-ghost btn-sm">
-                                        <Search className="w-4 h-4" />
-                                    </button>
-                                </label>
+                            <form onSubmit={handleSearch} className="w-full max-w-xl relative">
+                                <div className="flex items-center gap-2 bg-base-100 rounded-xl px-2 py-2 shadow-sm">
+                                    <div className="dropdown dropdown-hover">
+                                        <div tabIndex={0} role="button" className="btn border-none rounded-lg px-3">
+                                            {searchQuery.type === "photos" ? (
+                                                <>
+                                                    <Image className="w-5 h-5 text-gray-400" />
+                                                    <span className="hidden sm:inline">Photos</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Clapperboard className="w-5 h-5 text-gray-400" />
+                                                    Videos
+                                                </>
+                                            )}
+                                        </div>
+                                        <ul className="dropdown-content menu bg-base-100 text-black rounded-box z-30 w-32 p-2 shadow-sm">
+                                            <li>
+                                                <a onClick={() => setSearchQuery({ ...searchQuery, type: "photos" })} className="font-medium">
+                                                    <Image className="w-5 h-5 text-gray-400" />
+                                                    Photos
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a onClick={() => setSearchQuery({ ...searchQuery, type: "videos" })} className="font-medium">
+                                                    <Clapperboard className="w-5 h-5 text-gray-400" />
+                                                    Videos
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <label className="input input-ghost flex items-center gap-2 w-full" style={{ outline: "none", background: "lab(97.68% -.0000298023 .0000119209)" }}>
+                                        <input
+                                            type="text"
+                                            className="grow"
+                                            placeholder={`Search free stock ${searchQuery.type}...`}
+                                            value={searchQuery.value}
+                                            onChange={(e) => setSearchQuery({ ...searchQuery, value: e.target.value })}
+                                            onFocus={() => setIsOpen(true)}
+                                        />
+                                        <button type="submit" className="btn btn-circle btn-ghost btn-sm">
+                                            <Search className="w-5 h-5" />
+                                        </button>
+                                    </label>
+                                </div>
+                                {isOpen && (
+                                    <InputSuggestions />
+                                )}
                             </form>
                         </div>
                     )
@@ -72,7 +139,7 @@ export default function Navbar() {
                             <div className="dropdown dropdown-end">
                                 <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
                                     <div className="w-10 rounded-full">
-                                        <Image
+                                        <img
                                             src={user.imageUrl || "/default-avatar.png"}
                                             alt={user.fullName || user.primaryEmailAddress?.emailAddress || "User"}
                                             width={40}
@@ -124,22 +191,36 @@ export default function Navbar() {
             {/* Mobile search overlay */}
             {isMobileSearchOpen && (
                 <div className="md:hidden fixed top-0 left-0 right-0 z-50 bg-base-100 border-b border-base-300">
-                    <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-2">
-                        <form className="flex-1">
-                            <label className="input input-bordered flex items-center gap-2 w-full">
-                                <input type="text" className="grow" placeholder="Search photos" autoFocus />
-                                <button type="button" className="btn btn-circle btn-ghost btn-sm">
-                                    <Search className="w-4 h-4" />
-                                </button>
-                            </label>
-                        </form>
-                        <button
-                            className="btn btn-ghost btn-circle btn-sm md:btn-md"
-                            aria-label="Close search"
-                            onClick={() => setIsMobileSearchOpen(false)}
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                    <div className="container mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8 py-3 relative">
+                        <div className="flex items-center gap-2">
+                            <form onSubmit={handleSearch} className="flex-1">
+                                <label className="input input-bordered flex items-center gap-2 w-full">
+                                    <input
+                                        type="text"
+                                        className="grow"
+                                        placeholder={`Search free stock ${searchQuery.type}...`}
+                                        value={searchQuery.value}
+                                        onChange={(e) => setSearchQuery({ ...searchQuery, value: e.target.value })}
+                                        onFocus={() => setIsOpen(true)}
+                                    />
+                                    <button type="submit" className="btn btn-circle btn-ghost btn-sm">
+                                        <Search className="w-4 h-4" />
+                                    </button>
+                                </label>
+                            </form>
+                            <button
+                                className="btn btn-ghost btn-circle btn-sm md:btn-md"
+                                aria-label="Close search"
+                                onClick={() => setIsMobileSearchOpen(false)}
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+                        {isOpen && (
+                            <div className="relative me-9">
+                                <InputSuggestions />
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

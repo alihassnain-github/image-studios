@@ -1,5 +1,7 @@
-import SearchBar from '@/components/searchbar';
+
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
+const SearchBar = dynamic(() => import('@/components/searchbar'));
 
 const categoryChips = [
   { name: 'Nature', icon: '🌿' },
