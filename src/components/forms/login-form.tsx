@@ -5,12 +5,12 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { useSignIn } from "@clerk/nextjs";
-import { useToast } from '@/contexts/ToastContext';
 import { useRouter } from 'next/navigation';
 import { ClerkAPIError } from '@clerk/types';
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { useOAuthSignIn } from '@/hooks/useOAuthSignIn';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 const FormSchema = z.object({
   email: z
@@ -31,8 +31,6 @@ export default function LoginForm() {
   const { signIn, setActive, isLoaded } = useSignIn();
 
   const { signInWith } = useOAuthSignIn()
-
-  const { addToast } = useToast()
 
   const router = useRouter()
 
@@ -65,17 +63,11 @@ export default function LoginForm() {
       if (isClerkAPIResponseError(err)) {
         // Clerk gives you an array of ClerkAPIError objects
         err.errors.forEach((clerkError: ClerkAPIError) => {
-          addToast({
-            message: clerkError.message,
-            variant: "danger",
-          })
+          toast.error(clerkError.message);
         })
       } else {
         // fallback for unexpected errors
-        addToast({
-          message: "Something went wrong. Please try again.",
-          variant: "danger",
-        })
+        toast.error("Something went wrong. Please try again.");
       }
     }
 

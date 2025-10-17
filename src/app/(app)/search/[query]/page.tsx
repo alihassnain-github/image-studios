@@ -68,7 +68,7 @@ export default async function SearchPage({
     per_page: "30",
   }).toString();
 
-  const data = await getData(`${process.env.PEXELS_API_URI}/search?${queryString}`, "SearchPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
+  const data = await getData(`${process.env.PEXELS_API_URI}/search?${queryString}`, "SearchPage", { next: { revalidate: 21600 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
   console.log(data);
 

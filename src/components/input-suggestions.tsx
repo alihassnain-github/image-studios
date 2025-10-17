@@ -1,67 +1,50 @@
-"use client";
-
-import debounce from "@/hooks/useDebounce";
-import { clearSearchHistory, getSearchHistory } from "@/utils/format";
 import { ArrowUpRight, BrushCleaning, Search } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
-export default function InputSuggestions({ input, className }: { input: string, className?: string }) {
+interface InputSuggestionsProps {
+    suggestions: { word: string, score: number }[];
+    searchHistory: string[];
+    clearHistory: () => void;
+    onSelect: (query: string) => void;
+    type: "photos" | "videos";
+    className?: string;
+}
 
-    const [searchHistory, setSearchHistory] = useState<string[]>(getSearchHistory());
-    const [suggestions, setSuggestions] = useState<string[]>([]);
+export default function InputSuggestions({ suggestions, searchHistory, clearHistory, onSelect, type, className }: InputSuggestionsProps) {
 
-    function clearHistory() {
-        clearSearchHistory();
-        setSearchHistory([]);
-    }
-
-    const fetchSuggestions = async () => {
-        try {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_DATAMUSE_API_URI}/sug?s=${input}`);
-            const keywords = await response.json();
-            setSuggestions([...keywords.slice(0, 6)]);
-        } catch (error) {
-            console.error("Error fetching keyword: ", error);
-        }
-    }
-
-    const debouncedFetch = useMemo(() => debounce(fetchSuggestions, 500), []);
-
-    useEffect(() => {
-        debouncedFetch();
-    }, [input, debouncedFetch])
-
-    useEffect(() => {
-        console.log(suggestions);
-
-    }, [suggestions])
+    const makeLink = (word: string) => {
+        return type === "videos"
+            ? `/search/videos/${encodeURIComponent(word)}`
+            : `/search/${encodeURIComponent(word)}`;
+    };
 
     return (
         <div
             id="search-popover"
             className={twMerge("bg-base-100 rounded-xl px-3 py-4 absolute z-20 shadow-xl w-full end-0 mt-2 text-black ring-1 ring-base-200/60", className)}
         >
-            <div>
-                <ul className="menu menu-md rounded-box w-full bg-inherit p-0">
-                    {Array.from({ length: 6 }).map((_, index) => (
-                        <li key={index}>
-                            <Link className="font-medium flex items-center gap-2 hover:bg-base-200/70 rounded-lg transition-colors" href={""} prefetch={false}>
-                                <Search className="w-4 h-4 text-gray-400" />
-                                Suggestion {(index + 1).toString().padStart(2, "0")}
-                                <ArrowUpRight className="w-4 h-4 ms-auto text-gray-300" />
-                            </Link>
-                        </li>
-                    ))}
-                </ul>
+            {suggestions.length > 0 && (
+                <div>
+                    <ul className="menu menu-md rounded-box w-full bg-inherit p-0">
+                        {suggestions.map((item, index) => (
+                            <li key={index}>
+                                <Link href={makeLink(item.word)} prefetch={false} onClick={() => onSelect(item.word)} className="font-medium flex items-center gap-2 hover:bg-base-200/70 rounded-lg transition-colors">
+                                    <Search className="w-4 h-4 text-gray-400" />
+                                    {item.word}
+                                    <ArrowUpRight className="w-4 h-4 ms-auto text-gray-300" />
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
 
-            </div>
+                    <div className="divider mt-3 mb-0"></div>
+                </div>
+            )}
 
             {/* history */}
             {searchHistory.length > 0 && (
                 <>
-                    <div className="divider mt-3 mb-0"></div>
                     <div className="flex justify-between items-center">
                         <h3 className="font-bold">Recent Searches</h3>
                         <button onClick={clearHistory} className="tooltip" data-tip="Clear" aria-label="Clear recent searches">

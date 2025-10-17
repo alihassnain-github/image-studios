@@ -28,7 +28,7 @@ export async function generateMetadata(
         ...(filters.size && { size: filters.size }),
     }).toString();
 
-    const data = await getData(`${process.env.PEXELS_API_URI}/videos/search?${queryString}`, "VideosSearchPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
+    const data = await getData(`${process.env.PEXELS_API_URI}/videos/search?${queryString}`, "VideosSearchPage", { next: { revalidate: 21600 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
     const readableQuery = toTitleCase(decodeURIComponent(query));
 

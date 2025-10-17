@@ -30,7 +30,7 @@ export default async function PhotoPage({
     params: Promise<{ id: string }>
 }) {
     const { id } = await params;
-    const data = await getData(`${process.env.PEXELS_API_URI}/photos/${id}`, "PhotoPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
+    const data = await getData(`${process.env.PEXELS_API_URI}/photos/${id}`, "PhotoPage", { next: { revalidate: 21600 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
     return (
         <ImageModal />

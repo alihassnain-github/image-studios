@@ -8,8 +8,8 @@ import { useSignUp } from '@clerk/nextjs';
 import { useRouter } from 'next/navigation';
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { ClerkAPIError } from '@clerk/types';
-import { useToast } from "@/contexts/ToastContext";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const FormSchema = z.object({
     otp: z
@@ -21,8 +21,6 @@ const FormSchema = z.object({
 })
 
 export default function OTPForm() {
-
-    const { addToast } = useToast()
 
     const router = useRouter()
     const { signUp, setActive, isLoaded } = useSignUp()
@@ -54,16 +52,10 @@ export default function OTPForm() {
         } catch (err: unknown) {
             if (isClerkAPIResponseError(err)) {
                 err.errors.forEach((clerkError: ClerkAPIError) => {
-                    addToast({
-                        message: clerkError.message,
-                        variant: "danger",
-                    })
+                    toast.error(clerkError.message);
                 })
             } else {
-                addToast({
-                    message: "OTP verification failed. Please try again.",
-                    variant: "danger",
-                })
+                toast.error("OTP verification failed. Please try again.");
             }
         }
     }
@@ -76,23 +68,14 @@ export default function OTPForm() {
 
             await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
 
-            addToast({
-                message: "Verification code resent. Please check your email.",
-                variant: "success",
-            });
+            toast.success("Verification code resent. Please check your email.");
         } catch (err: unknown) {
             if (isClerkAPIResponseError(err)) {
                 err.errors.forEach((clerkError: ClerkAPIError) => {
-                    addToast({
-                        message: clerkError.message,
-                        variant: "danger",
-                    });
+                    toast.error(clerkError.message);
                 });
             } else {
-                addToast({
-                    message: "Failed to resend code. Please try again.",
-                    variant: "danger",
-                });
+                toast.error("Failed to resend code. Please try again.");
             }
         } finally {
             setIsResending(false);

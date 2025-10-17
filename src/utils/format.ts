@@ -25,27 +25,3 @@ export function formatNumber(num: number): string {
 
     return num.toString();
 }
-
-export function saveSearchHistory(query: string) {
-    const key = "search_history";
-    const stored = JSON.parse(localStorage.getItem(key) || "[]");
-
-    // Remove duplicates
-    const filtered = stored.filter((item: string) => item !== query);
-
-    // Add new query at start
-    filtered.unshift(query);
-
-    // Limit to 10
-    const limited = filtered.slice(0, 10);
-
-    localStorage.setItem(key, JSON.stringify(limited));
-}
-
-export function getSearchHistory(): string[] {
-    return JSON.parse(localStorage.getItem("search_history") || "[]");
-}
-
-export function clearSearchHistory() {
-    localStorage.removeItem("search_history");
-}

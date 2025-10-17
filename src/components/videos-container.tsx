@@ -9,17 +9,15 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getData } from "@/utils/api-helpers";
 import SearchSkeleton from "./skeletons/search-skeleton";
 import useThrottle from "@/hooks/useThrottle";
-import { useToast } from "@/contexts/ToastContext";
 import { RotateCcw, SearchX } from "lucide-react";
 import { VirtuosoMasonry } from "@virtuoso.dev/masonry";
+import { toast } from "react-toastify";
 
 export interface VideosContainerProps {
     initialData: PexelsVideoSearchResponse;
 }
 
 export default function VideosContainer({ initialData }: VideosContainerProps) {
-
-    const { addToast } = useToast();
 
     const [data, setData] = useState<PexelsVideoSearchResponse>(initialData);
     const [loading, setLoading] = useState({
@@ -64,7 +62,7 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
                 setData(data);
             } catch (error) {
                 console.error(error);
-                addToast({ message: "Failed to load videos. Please try again.", position: "bottom-right", variant: "danger" });
+                toast.error("Failed to load videos. Please try again.");
                 setError((prev) => ({ ...prev, initialError: "Failed to load videos. Please try again." }));
             } finally {
                 setLoading((prev) => ({ ...prev, initialLoading: false }));
@@ -91,7 +89,7 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
             }));
         } catch (error) {
             console.error(error);
-            addToast({ message: "Failed to load more videos. Please try again.", position: "bottom-right", variant: "danger" });
+            toast.error("Failed to load more videos. Please try again.");
             setError((prev) => ({ ...prev, onScrollError: "Failed to load more videos. Please try again." }));
         } finally {
             setLoading((prev) => ({ ...prev, onScrollLoading: false }));

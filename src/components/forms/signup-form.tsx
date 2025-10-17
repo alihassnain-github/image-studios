@@ -8,9 +8,9 @@ import { useSignUp } from '@clerk/nextjs';
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { ClerkAPIError } from '@clerk/types';
 import { useRouter } from 'next/navigation';
-import { useToast } from '@/contexts/ToastContext';
 import { useOAuthSignIn } from '@/hooks/useOAuthSignIn';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 const FormSchema = z.object({
   email: z
@@ -30,8 +30,6 @@ const FormSchema = z.object({
 })
 
 export default function SignupForm() {
-
-  const { addToast } = useToast()
 
   const router = useRouter()
 
@@ -64,17 +62,11 @@ export default function SignupForm() {
       if (isClerkAPIResponseError(err)) {
         // Clerk gives you an array of ClerkAPIError objects
         err.errors.forEach((clerkError: ClerkAPIError) => {
-          addToast({
-            message: clerkError.message,
-            variant: "danger",
-          })
+          toast.error(clerkError.message);
         })
       } else {
         // fallback for unexpected errors
-        addToast({
-          message: "Something went wrong. Please try again.",
-          variant: "danger",
-        })
+        toast.error("Something went wrong. Please try again.");
       }
     }
   }

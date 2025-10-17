@@ -4,8 +4,8 @@ import {
 import type { Metadata } from "next";
 import { Lexend } from "next/font/google";
 import "./globals.css";
-import { ToastProvider } from '@/contexts/ToastContext';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { ToastContainer } from 'react-toastify';
 
 const lexend = Lexend({
   subsets: ["latin"],
@@ -24,14 +24,24 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <ToastProvider>
-        <html lang="en" data-theme="light">
-          <body className={`${lexend.className} antialiased`}>
-            {children}
-            <SpeedInsights />
-          </body>
-        </html>
-      </ToastProvider>
+      <html lang="en" data-theme="light">
+        <body className={`${lexend.className} antialiased`}>
+          {children}
+          <SpeedInsights />
+        </body>
+      </html>
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </ClerkProvider>
   );
 }

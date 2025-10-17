@@ -4,12 +4,11 @@ import { useSignIn } from "@clerk/nextjs"
 import { OAuthStrategy } from "@clerk/types"
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors"
 import { ClerkAPIError } from "@clerk/types"
-import { useToast } from "@/contexts/ToastContext"
+import { toast } from "react-toastify"
 
 export function useOAuthSignIn() {
 
     const { signIn } = useSignIn()
-    const { addToast } = useToast()
 
     const signInWith = async (strategy: OAuthStrategy) => {
         if (!signIn) return
@@ -23,16 +22,10 @@ export function useOAuthSignIn() {
         } catch (err: unknown) {
             if (isClerkAPIResponseError(err)) {
                 err.errors.forEach((clerkError: ClerkAPIError) => {
-                    addToast({
-                        message: clerkError.message,
-                        variant: "danger",
-                    })
+                    toast.error(clerkError.message);
                 })
             } else {
-                addToast({
-                    message: "Something went wrong. Please try again.",
-                    variant: "danger",
-                })
+                toast.error("Something went wrong. Please try again.");
             }
         }
     }

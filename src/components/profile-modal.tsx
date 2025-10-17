@@ -8,8 +8,8 @@ import { User, Lock, Camera, X } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
 import { ClerkAPIError } from '@clerk/types';
-import { useToast } from "@/contexts/ToastContext";
 import Image from "next/image";
+import { toast } from "react-toastify";
 
 const profileSchema = z.object({
     firstName: z
@@ -51,9 +51,7 @@ interface ProfileModalProps {
 
 export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
 
-    const { user } = useUser()
-
-    const { addToast } = useToast()
+    const { user } = useUser();
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -87,7 +85,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 await user.setProfileImage({ file: selectedFile });
             }
 
-            addToast({ message: "Profile updated successfully.", variant: "success" })
+            toast.success("Profile updated successfully.");
 
             await user.reload();
             setSelectedFile(null);
@@ -95,17 +93,11 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             if (isClerkAPIResponseError(err)) {
                 // Clerk gives you an array of ClerkAPIError objects
                 err.errors.forEach((clerkError: ClerkAPIError) => {
-                    addToast({
-                        message: clerkError.message,
-                        variant: "danger",
-                    })
+                    toast.error(clerkError.message);
                 })
             } else {
                 // fallback for unexpected errors
-                addToast({
-                    message: "Failed to update profile. Please try again.",
-                    variant: "danger",
-                })
+                toast.error("Failed to update profile. Please try again.");
             }
         }
     };
@@ -119,7 +111,7 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
                 signOutOfOtherSessions: true,
             })
 
-            addToast({ message: "Password updated successfully.", variant: "success" })
+            toast.success("Password updated successfully.");
 
             passwordForm.reset();
 
@@ -127,17 +119,11 @@ export default function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
             if (isClerkAPIResponseError(err)) {
                 // Clerk gives you an array of ClerkAPIError objects
                 err.errors.forEach((clerkError: ClerkAPIError) => {
-                    addToast({
-                        message: clerkError.message,
-                        variant: "danger",
-                    })
+                    toast.error(clerkError.message);
                 })
             } else {
                 // fallback for unexpected errors
-                addToast({
-                    message: "Failed to update password. Please try again.",
-                    variant: "danger",
-                })
+                toast.error("Failed to update password. Please try again.");
             }
         }
     };
