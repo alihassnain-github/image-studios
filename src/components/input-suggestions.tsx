@@ -56,7 +56,7 @@ export default function InputSuggestions({ suggestions, searchHistory, clearHist
                         {searchHistory.map((item, index) => (
                             <Link
                                 key={index}
-                                href={`/search/${encodeURIComponent(item)}`}
+                                href={makeLink(item)}
                                 prefetch={false}
                                 className="btn btn-sm bg-base-200/40 hover:bg-base-200 rounded-lg font-medium justify-between"
                             >

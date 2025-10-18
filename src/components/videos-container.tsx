@@ -8,10 +8,10 @@ import { formatNumber } from "@/utils/format";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getData } from "@/utils/api-helpers";
 import SearchSkeleton from "./skeletons/search-skeleton";
-import useThrottle from "@/hooks/useThrottle";
 import { RotateCcw, SearchX } from "lucide-react";
 import { VirtuosoMasonry } from "@virtuoso.dev/masonry";
 import { toast } from "react-toastify";
+import throttle from "lodash.throttle";
 
 export interface VideosContainerProps {
     initialData: PexelsVideoSearchResponse;
@@ -96,7 +96,7 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
         }
     };
 
-    const throttledFetch = useThrottle(fetchNextPage, 2000);
+    const throttledFetch = throttle(fetchNextPage, 2000);
 
     useEffect(() => {
         const sentinel = observerRef.current;
@@ -147,7 +147,8 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
                         />
                     )}
                     columnCount={window.innerWidth < 1024 ? 2 : 3}
-                    className="columns-2 lg:columns-3 gap-4"
+                    style={{ overflowY: "auto" }}
+                    className="gap-4 scrollbar-hide"
                 />
             )}
 

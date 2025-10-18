@@ -8,11 +8,11 @@ import { formatNumber } from "@/utils/format";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { getData } from "@/utils/api-helpers";
 import SearchSkeleton from "./skeletons/search-skeleton";
-import useThrottle from "@/hooks/useThrottle";
 import { RotateCcw, SearchX } from "lucide-react";
 import { VirtuosoMasonry } from "@virtuoso.dev/masonry";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import throttle from "lodash.throttle";
 
 export interface ImagesContainerProps {
     initialData: PexelsSearchResponse;
@@ -99,7 +99,7 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
         }
     };
 
-    const throttledFetch = useThrottle(fetchNextPage, 2000);
+    const throttledFetch = throttle(fetchNextPage, 2000);
 
     useEffect(() => {
         const sentinel = observerRef.current;
@@ -156,7 +156,7 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                     )}
                     columnCount={window.innerWidth < 1024 ? 2 : 3}
                     style={{ overflowY: "auto" }}
-                    className="gap-4"
+                    className="gap-4 scrollbar-hide"
                 />
             )}
 

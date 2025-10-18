@@ -53,7 +53,7 @@ export default function SearchBar({ className }: { className?: string }) {
     }
 
     const debouncedFetchSuggestions = useCallback(
-        debounce(fetchSuggestions, 500), []
+        debounce(fetchSuggestions, 300), []
     );
 
     const onSelect = (query: string) => {

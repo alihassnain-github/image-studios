@@ -9,7 +9,7 @@ import { Search, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 
-const SearchBar = dynamic(() => import('@/components/searchbar'));
+const SearchBar = dynamic(() => import('@/components/searchbar'), { ssr: false });
 
 export default function Navbar() {
 
