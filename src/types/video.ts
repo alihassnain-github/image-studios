@@ -1,3 +1,13 @@
+export interface FormattedVideo {
+    id: number;
+    label: string;
+    resolution: string;
+    width: number | null;
+    height: number | null;
+    link: string;
+    sortOrder: number;
+}
+
 export interface PexelsVideoFile {
     id: number;
     quality: string;

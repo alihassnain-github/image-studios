@@ -54,6 +54,9 @@ const ImageCard = memo(function ImageCard({ id, src, alt, photographer, width, h
             {downloadUrl && (
               <a
                 href={`/api/download?url=${encodeURIComponent(downloadUrl)}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
                 className="pointer-events-auto btn btn-sm btn-neutral/90 hover:btn-neutral gap-2"
                 aria-label="Download image"
               >

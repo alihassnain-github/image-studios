@@ -33,7 +33,7 @@ export async function generateMetadata(
     const readableQuery = toTitleCase(decodeURIComponent(query));
 
     return {
-        title: `Free ${readableQuery} Videos | Image Studios`,
+        title: `Free ${readableQuery} Videos - Image Studios`,
         description: `Discover ${formatNumber(
             data.total_results
         )} free ${readableQuery} videos. Download high-quality ${readableQuery} videos in landscape, portrait, and square orientations.`,

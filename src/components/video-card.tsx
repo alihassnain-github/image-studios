@@ -2,6 +2,7 @@
 
 import React, { memo, useRef } from "react";
 import { PexelsVideo } from "@/types/video";
+import { useRouter } from "next/navigation";
 
 type Photographer = {
     name: string;
@@ -18,9 +19,11 @@ export interface VideoCardProps {
 
 const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: VideoCardProps) {
 
+    const router = useRouter();
+
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    // Get the best quality video file (prefer HD, fallback to SD)
+    // Get the low quality video file (prefer SD, fallback to HD)
     const getBestVideoFile = () => {
         const sdFile = video.video_files.find(file => file.quality === "sd");
         const hdFile = video.video_files.find(file => file.quality === "hd");
@@ -52,7 +55,8 @@ const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: 
 
     return (
         <figure
-            className="group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100"
+            onClick={() => router.push(`/video/${video.id}`)}
+            className="cursor-pointer group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
         >
@@ -87,6 +91,9 @@ const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: 
                         {downloadUrl && (
                             <a
                                 href={`/api/download?url=${encodeURIComponent(downloadUrl)}`}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                }}
                                 className="pointer-events-auto btn btn-sm btn-neutral/90 hover:btn-neutral gap-2"
                                 aria-label="Download video"
                             >

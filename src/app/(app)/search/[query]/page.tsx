@@ -35,7 +35,7 @@ export async function generateMetadata(
   const readableQuery = toTitleCase(decodeURIComponent(query));
 
   return {
-    title: `Free ${readableQuery} Photos | Image Studios`,
+    title: `Free ${readableQuery} Photos - Image Studios`,
     description: `Discover ${formatNumber(
       data.total_results
     )} free ${readableQuery} photos. Download high-quality ${readableQuery} images in landscape, portrait, and square orientations.`,

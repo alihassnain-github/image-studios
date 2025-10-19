@@ -18,7 +18,7 @@ export async function generateMetadata(
     const data = await getData(`${process.env.PEXELS_API_URI}/photos/${id}`, "PhotoPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
     return {
-        title: `${data.alt} | Free Image`,
+        title: `${data.alt} - Free Stock Image`,
         description: data.alt,
     }
 }
@@ -33,6 +33,6 @@ export default async function PhotoPage({
     const data = await getData(`${process.env.PEXELS_API_URI}/photos/${id}`, "PhotoPage", { next: { revalidate: 21600 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
     return (
-        <ImageModal />
+        <ImageModal data={data} />
     )
 }
