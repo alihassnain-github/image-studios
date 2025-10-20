@@ -1,9 +1,10 @@
 "use client";
 
 import { PexelsPhoto } from "@/types/image";
-import { ArrowBigDownDash, CircleCheck, ExternalLink, Share2 } from "lucide-react";
+import { ArrowBigDownDash, CircleCheck, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
+import ShareModal from "./share-modal";
 
 interface ImageModalProps {
     data: PexelsPhoto;
@@ -135,10 +136,7 @@ export default function ImageModal({ data }: ImageModalProps) {
                         <CircleCheck className="w-4 h-4" />
                         <a target="_blank" href="https://www.pexels.com/license/" className="link link-hover">Free to use</a>
                     </div>
-                    <button className="btn btn-soft btn-primary rounded-full">
-                        <Share2 className="w-4 h-4" />
-                        Share
-                    </button>
+                    <ShareModal type="photo" photographer={data.photographer} />
                 </div>
             </div>
             <form method="dialog" className="modal-backdrop">
