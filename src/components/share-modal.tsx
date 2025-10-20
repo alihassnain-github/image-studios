@@ -1,5 +1,6 @@
 "use client";
 
+import { RiFacebookLine, RiLinkedinLine, RiPinterestLine, RiTwitterXFill } from "@remixicon/react";
 import { Share2, Clipboard, ClipboardCheck } from "lucide-react";
 import { useRef, useState } from "react";
 
@@ -13,6 +14,9 @@ export default function ShareModal({ type, photographer }: ShareModalProps) {
     const modalRef = useRef<HTMLDialogElement | null>(null);
     const [isCopied, setIsCopied] = useState(false);
 
+    const currentUrl = window.location.href;
+    const shareText = `${type.charAt(0).toUpperCase() + type.slice(1)} by ${photographer} on Image Studios`;
+
     const handleClick = () => {
         if (modalRef.current) {
             modalRef.current.showModal();
@@ -20,10 +24,22 @@ export default function ShareModal({ type, photographer }: ShareModalProps) {
     }
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(window.location.href);
+        navigator.clipboard.writeText(currentUrl);
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2000);
     }
+
+    // social share links
+    const shareLinks = {
+        twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`,
+        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
+        pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(currentUrl)}&description=${encodeURIComponent(shareText)}`
+    };
+
+    const openShare = (url: string) => {
+        window.open(url, "_blank", "noopener,noreferrer,width=600,height=400");
+    };
 
     return (
         <>
@@ -39,9 +55,22 @@ export default function ShareModal({ type, photographer }: ShareModalProps) {
 
                     <h3 className="font-bold text-lg">Share this {type.charAt(0).toUpperCase() + type.slice(1)}</h3>
 
-                    <div></div>
+                    <div className="flex items-center gap-4 my-5 justify-center">
+                        <button className="btn btn-circle btn-ghost" title="X">
+                            <RiTwitterXFill size={18} />
+                        </button>
+                        <button className="btn btn-circle btn-ghost" title="Pinterest">
+                            <RiPinterestLine size={18} />
+                        </button>
+                        <button className="btn btn-circle btn-ghost" title="LinkedIn" onClick={() => openShare(shareLinks.linkedin)}>
+                            <RiLinkedinLine size={18} />
+                        </button>
+                        <button className="btn btn-circle btn-ghost" title="Facebook">
+                            <RiFacebookLine size={18} />
+                        </button>
+                    </div>
 
-                    <p className="mb-2">Copy and share the link below</p>
+                    <p className="mb-1 text-sm text-gray-250">Copy and share the link below</p>
                     <div className="px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl flex justify-between items-center gap-4 cursor-pointer" onClick={handleCopy}>
                         <p>{type.charAt(0).toUpperCase() + type.slice(1)} by {photographer}</p>
                         <button className="btn btn-soft btn-primary btn-circle" onClick={handleCopy}>
