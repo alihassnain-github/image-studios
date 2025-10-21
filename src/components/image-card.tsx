@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTopLoader } from "nextjs-toploader";
 import { useRouter } from "nextjs-toploader/app";
 import React, { memo } from "react";
 
@@ -19,12 +20,30 @@ export interface ImageCardProps {
   width: number;
   height: number;
   avgColor?: string;
-  downloadUrl?: string;
+  downloadUrl: string;
 }
 
 const ImageCard = memo(function ImageCard({ id, src, alt, photographer, width, height, downloadUrl, avgColor }: ImageCardProps) {
 
   const router = useRouter();
+
+  const loader = useTopLoader();
+
+  const handleDownload = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+
+    loader.start();
+
+    const a = document.createElement('a');
+    a.href = `/api/download?url=${encodeURIComponent(downloadUrl)}`;
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    loader.done(true);
+
+  };
 
   return (
     <figure onClick={() => router.push(`/photo/${id}`)} className="cursor-pointer group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100">
@@ -52,11 +71,8 @@ const ImageCard = memo(function ImageCard({ id, src, alt, photographer, width, h
           {/* top actions */}
           <div className="relative z-10 flex items-start justify-end p-2 md:p-4">
             {downloadUrl && (
-              <a
-                href={`/api/download?url=${encodeURIComponent(downloadUrl)}`}
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
+              <button
+                onClick={handleDownload}
                 className="pointer-events-auto btn btn-sm btn-neutral/90 hover:btn-neutral gap-2"
                 aria-label="Download image"
               >
@@ -66,7 +82,7 @@ const ImageCard = memo(function ImageCard({ id, src, alt, photographer, width, h
                   <path d="M5 20a2 2 0 0 1-2-2v-1a1 1 0 1 1 2 0v1h14v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H5Z" />
                 </svg>
                 <span className="hidden lg:inline">Download</span>
-              </a>
+              </button>
             )}
           </div>
 

@@ -5,12 +5,15 @@ import { ArrowBigDownDash, CircleCheck, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ShareModal from "./share-modal";
+import { useTopLoader } from "nextjs-toploader";
 
 interface ImageModalProps {
     data: PexelsPhoto;
 }
 
 export default function ImageModal({ data }: ImageModalProps) {
+
+    const loader = useTopLoader();
 
     const modalRef = useRef<HTMLDialogElement | null>(null);
     const imageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -24,8 +27,17 @@ export default function ImageModal({ data }: ImageModalProps) {
         }
     }, [modalRef]);
 
-    const handleDownload = (url: string) => {
-        return `/api/download?url=${encodeURIComponent(url)}`;
+    const handleDownload = (downloadUrl: string) => {
+        loader.start();
+
+        const a = document.createElement('a');
+        a.href = `/api/download?url=${encodeURIComponent(downloadUrl)}`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        loader.done(true);
     };
 
     const toggleZoom = () => {
@@ -89,8 +101,8 @@ export default function ImageModal({ data }: ImageModalProps) {
                         </div>
                         <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg mt-1">
                             <li>
-                                <a
-                                    href={handleDownload(data.src.original)}
+                                <button
+                                    onClick={() => handleDownload(data.src.original)}
                                     className="font-medium"
                                     aria-label="Download image"
                                 >
@@ -98,34 +110,34 @@ export default function ImageModal({ data }: ImageModalProps) {
                                     <span className="text-xs opacity-60">
                                         {data.width} × {data.height}
                                     </span>
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a
-                                    href={handleDownload(data.src.large)}
+                                <button
+                                    onClick={() => handleDownload(data.src.large)}
                                     className="font-medium"
                                     aria-label="Download image"
                                 >
                                     Large
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a
-                                    href={handleDownload(data.src.medium)}
+                                <button
+                                    onClick={() => handleDownload(data.src.medium)}
                                     className="font-medium"
                                     aria-label="Download image"
                                 >
                                     Medium
-                                </a>
+                                </button>
                             </li>
                             <li>
-                                <a
-                                    href={handleDownload(data.src.small)}
+                                <button
+                                    onClick={() => handleDownload(data.src.small)}
                                     className="font-medium"
                                     aria-label="Download image"
                                 >
                                     Small
-                                </a>
+                                </button>
                             </li>
                         </ul>
                     </div>

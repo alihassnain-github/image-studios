@@ -2,14 +2,18 @@
 
 import { PexelsVideo } from "@/types/video";
 import { formatVideoFiles } from "@/utils/format";
-import { ArrowBigDownDash, CircleCheck, ExternalLink, Share2 } from "lucide-react";
+import { ArrowBigDownDash, CircleCheck, ExternalLink } from "lucide-react";
+import { useTopLoader } from "nextjs-toploader";
 import { useEffect, useRef } from "react";
+import ShareModal from "./share-modal";
 
 interface VideoModalProps {
     data: PexelsVideo;
 }
 
 export default function VideoModal({ data }: VideoModalProps) {
+
+    const loader = useTopLoader();
 
     const modalRef = useRef<HTMLDialogElement | null>(null);
 
@@ -19,8 +23,18 @@ export default function VideoModal({ data }: VideoModalProps) {
         }
     }, [modalRef]);
 
-    const handleDownload = (url: string) => {
-        return `/api/download?url=${encodeURIComponent(url)}`;
+    const handleDownload = (downloadUrl: string) => {
+
+        loader.start();
+
+        const a = document.createElement('a');
+        a.href = `/api/download?url=${encodeURIComponent(downloadUrl)}`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        loader.done(true);
     };
 
     // Prefer HD, fallback to SD
@@ -80,8 +94,8 @@ export default function VideoModal({ data }: VideoModalProps) {
                         <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg mt-1">
                             {formatVideoFiles(data.video_files).map((file) => (
                                 <li key={file.id}>
-                                    <a
-                                        href={handleDownload(file.link)}
+                                    <button
+                                        onClick={() => handleDownload(file.link)}
                                         className="font-medium"
                                         aria-label="Download Video"
                                     >
@@ -89,7 +103,7 @@ export default function VideoModal({ data }: VideoModalProps) {
                                         <span className="text-xs opacity-60">
                                             {file.resolution}
                                         </span>
-                                    </a>
+                                    </button>
                                 </li>
                             ))}
                         </ul>
@@ -101,10 +115,7 @@ export default function VideoModal({ data }: VideoModalProps) {
                         <CircleCheck className="w-4 h-4" />
                         <a target="_blank" href="https://www.pexels.com/license/" className="link link-hover">Free to use</a>
                     </div>
-                    <button className="btn btn-soft btn-primary rounded-full">
-                        <Share2 className="w-4 h-4" />
-                        Share
-                    </button>
+                    <ShareModal type="video" photographer={data.user.name} />
                 </div>
             </div>
             <form method="dialog" className="modal-backdrop">

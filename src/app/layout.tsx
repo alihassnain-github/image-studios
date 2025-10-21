@@ -20,8 +20,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  modal,
 }: Readonly<{
   children: React.ReactNode;
+  modal: React.ReactNode;
 }>) {
   return (
     <ClerkProvider>
@@ -38,6 +40,7 @@ export default function RootLayout({
             speed={200}
             shadow="0 0 10px #5B4FE5,0 0 5px #5B4FE5"
           />
+          {modal}
           {children}
           <SpeedInsights />
         </body>

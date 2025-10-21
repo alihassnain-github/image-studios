@@ -3,6 +3,7 @@
 import React, { memo, useRef } from "react";
 import { PexelsVideo } from "@/types/video";
 import { useRouter } from "nextjs-toploader/app";
+import { useTopLoader } from "nextjs-toploader";
 
 type Photographer = {
     name: string;
@@ -14,12 +15,13 @@ type Photographer = {
 export interface VideoCardProps {
     video: PexelsVideo;
     photographer?: Photographer | null;
-    downloadUrl?: string;
+    downloadUrl: string;
 }
 
 const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: VideoCardProps) {
 
     const router = useRouter();
+    const loader = useTopLoader();
 
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -51,6 +53,22 @@ const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: 
         if (videoRef.current) {
             videoRef.current.pause();
         }
+    };
+
+    const handleDownload = (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation();
+
+        loader.start();
+
+        const a = document.createElement('a');
+        a.href = `/api/download?url=${encodeURIComponent(downloadUrl)}`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        loader.done(true);
+
     };
 
     return (
@@ -89,11 +107,8 @@ const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: 
                     {/* top actions */}
                     <div className="relative z-10 flex items-start justify-end p-2 md:p-4">
                         {downloadUrl && (
-                            <a
-                                href={`/api/download?url=${encodeURIComponent(downloadUrl)}`}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                }}
+                            <button
+                                onClick={handleDownload}
                                 className="pointer-events-auto btn btn-sm btn-neutral/90 hover:btn-neutral gap-2"
                                 aria-label="Download video"
                             >
@@ -103,7 +118,7 @@ const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: 
                                     <path d="M5 20a2 2 0 0 1-2-2v-1a1 1 0 1 1 2 0v1h14v-1a1 1 0 1 1 2 0v1a2 2 0 0 1-2 2H5Z" />
                                 </svg>
                                 <span className="hidden lg:inline">Download</span>
-                            </a>
+                            </button>
                         )}
                     </div>
 
