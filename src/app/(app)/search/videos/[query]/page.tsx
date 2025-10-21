@@ -66,8 +66,6 @@ export default async function SearchPage({
 
     const data = await getData(`${process.env.PEXELS_API_URI}/videos/search?${queryString}`, "VideosSearchPage", { next: { revalidate: 60 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
-    console.log(data);
-
     return (
         <div className="min-h-screen flex flex-col">
 

@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useRouter } from 'next/navigation'
 import { Clapperboard, Image, Search } from "lucide-react";
 import InputSuggestions from "./input-suggestions";
 import debounce from "lodash.debounce";
 import { saveSearchHistory, clearSearchHistory, getSearchHistory } from "@/utils/history";
 import cachedFetch from "@/utils/fetch-cache";
 import { twMerge } from "tailwind-merge";
+import { useRouter } from "nextjs-toploader/app";
 
 export default function SearchBar({ className }: { className?: string }) {
 

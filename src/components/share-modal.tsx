@@ -29,16 +29,11 @@ export default function ShareModal({ type, photographer }: ShareModalProps) {
         setTimeout(() => setIsCopied(false), 2000);
     }
 
-    // social share links
-    const shareLinks = {
-        twitter: `https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`,
-        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`,
-        pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(currentUrl)}&description=${encodeURIComponent(shareText)}`
-    };
-
-    const openShare = (url: string) => {
-        window.open(url, "_blank", "noopener,noreferrer,width=600,height=400");
+    const socialShareLinks = {
+        x: `https://x.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`,
+        pinterest: `https://www.pinterest.com/pin/create/link?url=${encodeURIComponent(currentUrl)}`,
+        linkedin: `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(currentUrl)}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&t=${encodeURIComponent(shareText)}`,
     };
 
     return (
@@ -56,18 +51,18 @@ export default function ShareModal({ type, photographer }: ShareModalProps) {
                     <h3 className="font-bold text-lg">Share this {type.charAt(0).toUpperCase() + type.slice(1)}</h3>
 
                     <div className="flex items-center gap-4 my-5 justify-center">
-                        <button className="btn btn-circle btn-ghost" title="X">
+                        <a href={socialShareLinks.x} target="_blank" className="btn btn-circle btn-ghost" title="X">
                             <RiTwitterXFill size={18} />
-                        </button>
-                        <button className="btn btn-circle btn-ghost" title="Pinterest">
+                        </a>
+                        <a href={socialShareLinks.pinterest} target="_blank" className="btn btn-circle btn-ghost" title="Pinterest">
                             <RiPinterestLine size={18} />
-                        </button>
-                        <button className="btn btn-circle btn-ghost" title="LinkedIn" onClick={() => openShare(shareLinks.linkedin)}>
+                        </a>
+                        <a href={socialShareLinks.linkedin} target="_blank" className="btn btn-circle btn-ghost" title="LinkedIn">
                             <RiLinkedinLine size={18} />
-                        </button>
-                        <button className="btn btn-circle btn-ghost" title="Facebook">
+                        </a>
+                        <a href={socialShareLinks.facebook} target="_blank" className="btn btn-circle btn-ghost" title="Facebook">
                             <RiFacebookLine size={18} />
-                        </button>
+                        </a>
                     </div>
 
                     <p className="mb-1 text-sm text-gray-250">Copy and share the link below</p>

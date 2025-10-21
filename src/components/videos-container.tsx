@@ -5,13 +5,14 @@ import VideoCard from "@/components/video-card";
 import { PexelsVideo, PexelsVideoSearchResponse } from "@/types/video";
 import FilterBar from "./filter-bar";
 import { formatNumber } from "@/utils/format";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { getData } from "@/utils/api-helpers";
 import SearchSkeleton from "./skeletons/search-skeleton";
 import { RotateCcw, SearchX } from "lucide-react";
 import { VirtuosoMasonry } from "@virtuoso.dev/masonry";
 import { toast } from "react-toastify";
 import throttle from "lodash.throttle";
+import { useRouter } from "nextjs-toploader/app";
 
 export interface VideosContainerProps {
     initialData: PexelsVideoSearchResponse;

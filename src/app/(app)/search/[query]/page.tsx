@@ -70,9 +70,6 @@ export default async function SearchPage({
 
   const data = await getData(`${process.env.PEXELS_API_URI}/search?${queryString}`, "SearchPage", { next: { revalidate: 21600 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
-  console.log(data);
-
-
   return (
     <div className="min-h-screen flex flex-col">
 

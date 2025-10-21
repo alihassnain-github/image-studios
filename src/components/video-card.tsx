@@ -2,7 +2,7 @@
 
 import React, { memo, useRef } from "react";
 import { PexelsVideo } from "@/types/video";
-import { useRouter } from "next/navigation";
+import { useRouter } from "nextjs-toploader/app";
 
 type Photographer = {
     name: string;
