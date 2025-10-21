@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import ShareModal from "./share-modal";
 import { useTopLoader } from "nextjs-toploader";
+import { useRouter } from "next/navigation";
 
 interface ImageModalProps {
     data: PexelsPhoto;
@@ -14,6 +15,8 @@ interface ImageModalProps {
 export default function ImageModal({ data }: ImageModalProps) {
 
     const loader = useTopLoader();
+
+    const router = useRouter();
 
     const modalRef = useRef<HTMLDialogElement | null>(null);
     const imageContainerRef = useRef<HTMLDivElement | null>(null);
@@ -40,6 +43,10 @@ export default function ImageModal({ data }: ImageModalProps) {
         loader.done(true);
     };
 
+    const handleClose = () => {
+        router.back();
+    };
+
     const toggleZoom = () => {
         setIsZoomed(!isZoomed);
     };
@@ -57,7 +64,7 @@ export default function ImageModal({ data }: ImageModalProps) {
     return (
         <dialog ref={modalRef} id="image_modal" className="modal">
             <div className="modal-box w-11/12 max-w-5xl">
-                <form method="dialog">
+                <form method="dialog" onClick={handleClose}>
                     {/* if there is a button in form, it will close the modal */}
                     <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
@@ -151,7 +158,7 @@ export default function ImageModal({ data }: ImageModalProps) {
                     <ShareModal type="photo" photographer={data.photographer} />
                 </div>
             </div>
-            <form method="dialog" className="modal-backdrop">
+            <form method="dialog" className="modal-backdrop" onClick={handleClose}>
                 <button>close</button>
             </form>
         </dialog>

@@ -46,7 +46,7 @@ const ImageCard = memo(function ImageCard({ id, src, alt, photographer, width, h
   };
 
   return (
-    <figure onClick={() => router.push(`/photo/${id}`)} className="cursor-pointer group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100">
+    <figure onClick={() => router.push(`/photo/${id}`, { scroll: false })} className="cursor-pointer group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100">
       <div
         className="relative w-full"
         style={{
