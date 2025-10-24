@@ -31,6 +31,7 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
     });
 
     const isInitialMount = useRef(true);
+    const lastPathRef = useRef<string | null>(null);
     const observerRef = useRef<HTMLDivElement | null>(null);
 
     const router = useRouter();
@@ -41,8 +42,23 @@ export default function VideosContainer({ initialData }: VideosContainerProps) {
 
         if (isInitialMount.current) {
             isInitialMount.current = false;
+            lastPathRef.current = pathname;
             return;
         }
+
+        const isGoingToModal = pathname.includes("/video/");
+
+        const isComingBackToSameSearch =
+            lastPathRef.current &&
+            (lastPathRef.current.includes("/video/")) &&
+            pathname.startsWith("/search/");
+
+        if (isGoingToModal || isComingBackToSameSearch) {
+            lastPathRef.current = pathname;
+            return;
+        }
+
+        lastPathRef.current = pathname;
 
         const orientation = searchParams.get('orientation');
         const size = searchParams.get('size');

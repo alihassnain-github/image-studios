@@ -73,7 +73,7 @@ const VideoCard = memo(function VideoCard({ video, photographer, downloadUrl }: 
 
     return (
         <figure
-            onClick={() => router.push(`/video/${video.id}`)}
+            onClick={() => router.push(`/video/${video.id}`, { scroll: false })}
             className="cursor-pointer group relative break-inside-avoid mb-4 overflow-hidden rounded-lg shadow-sm bg-base-100"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}

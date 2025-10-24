@@ -32,6 +32,7 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
     });
 
     const isInitialMount = useRef(true);
+    const lastPathRef = useRef<string | null>(null);
     const observerRef = useRef<HTMLDivElement | null>(null);
 
     const router = useRouter();
@@ -42,8 +43,23 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
 
         if (isInitialMount.current) {
             isInitialMount.current = false;
+            lastPathRef.current = pathname;
             return;
         }
+
+        const isGoingToModal = pathname.includes("/photo/");
+
+        const isComingBackToSameSearch =
+            lastPathRef.current &&
+            (lastPathRef.current.includes("/photo/")) &&
+            pathname.startsWith("/search/");
+
+        if (isGoingToModal || isComingBackToSameSearch) {
+            lastPathRef.current = pathname;
+            return;
+        }
+
+        lastPathRef.current = pathname;
 
         const orientation = searchParams.get('orientation');
         const color = searchParams.get('color');

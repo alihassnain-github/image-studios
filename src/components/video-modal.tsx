@@ -6,6 +6,7 @@ import { ArrowBigDownDash, CircleCheck, ExternalLink } from "lucide-react";
 import { useTopLoader } from "nextjs-toploader";
 import { useEffect, useRef } from "react";
 import ShareModal from "./share-modal";
+import { useRouter } from "next/navigation";
 
 interface VideoModalProps {
     data: PexelsVideo;
@@ -14,6 +15,8 @@ interface VideoModalProps {
 export default function VideoModal({ data }: VideoModalProps) {
 
     const loader = useTopLoader();
+
+    const router = useRouter();
 
     const modalRef = useRef<HTMLDialogElement | null>(null);
 
@@ -37,6 +40,10 @@ export default function VideoModal({ data }: VideoModalProps) {
         loader.done(true);
     };
 
+    const handleClose = () => {
+        router.back();
+    };
+
     // Prefer HD, fallback to SD
     const getBestVideoFile = () => {
         const hdFile = data.video_files.find(file => file.quality === "hd");
@@ -49,7 +56,7 @@ export default function VideoModal({ data }: VideoModalProps) {
     return (
         <dialog ref={modalRef} id="video_modal" className="modal">
             <div className="modal-box w-11/12 max-w-5xl">
-                <form method="dialog">
+                <form method="dialog" onClick={handleClose}>
                     {/* if there is a button in form, it will close the modal */}
                     <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
@@ -118,7 +125,7 @@ export default function VideoModal({ data }: VideoModalProps) {
                     <ShareModal type="video" photographer={data.user.name} />
                 </div>
             </div>
-            <form method="dialog" className="modal-backdrop">
+            <form method="dialog" className="modal-backdrop" onClick={handleClose}>
                 <button>close</button>
             </form>
         </dialog>
