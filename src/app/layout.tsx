@@ -2,13 +2,13 @@ import {
   ClerkProvider,
 } from '@clerk/nextjs'
 import type { Metadata } from "next";
-import { Lexend } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ToastContainer } from 'react-toastify';
 import NextTopLoader from 'nextjs-toploader';
 
-const lexend = Lexend({
+const outfit = Outfit({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
@@ -26,7 +26,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" data-theme="light">
-        <body className={`${lexend.className} antialiased`}>
+        <body className={`${outfit.className} antialiased`}>
           <NextTopLoader
             color="#5B4FE5"
             initialPosition={0.08}
@@ -43,6 +43,7 @@ export default function RootLayout({
         </body>
       </html>
       <ToastContainer
+        style={{ fontFamily: "'Outfit', sans-serif" }}
         position="bottom-right"
         autoClose={5000}
         hideProgressBar={false}
