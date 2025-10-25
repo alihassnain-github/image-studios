@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🖼️ Image Studios – Free Stock Photos and Videos
 
-## Getting Started
+A fully functional and scalable **Next.js** application that lets users explore, search, and download **millions of free stock photos and videos** powered by the **Pexels API**.  
+This project also integrates **authentication with Clerk**, providing secure login options via **Google** and **GitHub**.
 
-First, run the development server:
+![Image Studios](./public/preview.png)
+
+---
+
+## 🧩 Tech Stack
+
+- **Next.js 15** – React framework for SSR and performance  
+- **Pexels API** – For fetching high-quality photos and videos  
+- **Clerk Auth** – Authentication with Google & GitHub  
+- **React** – UI components  
+- **DaisyUI** – Tailwind CSS UI component library  
+
+---
+
+## ✨ Features
+
+- 🔐 Authentication with **Clerk** (Google & GitHub)
+- 📸 Browse and **Download Photos & Videos**
+- 🔍 Smart **Search with Suggestions**
+- 🖥️ Responsive and **Optimized Layout**
+- ⚡ Server-Side Rendering (SSR) & Caching
+- 🔁 **Route Interception** for smooth navigation
+- 🔎 **SEO Optimized** with Next.js metadata
+- 📱 Fully responsive across devices
+
+---
+
+## ⚙️ How to Run Locally
+
+Follow the steps below to set up the project on your local machine.
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/alihassnain-github/image-studios
+```
+
+Then navigate into the project directory:
+
+```bash
+cd image-studios
+```
+
+---
+
+### 2. Install Dependencies
+
+Make sure you have **Node.js (>=20)** installed.
+
+Then run:
+
+```bash
+npm install
+# or
+yarn install
+```
+
+---
+
+### 3. Create the `.env.local` File
+
+Copy the contents of the provided `.env.example` file and rename it to `.env.local` in the root directory.
+
+```bash
+cp .env.example .env.local
+```
+
+---
+
+### 4. Add Environment Variables
+
+You’ll need to set up your **API keys** and **Clerk credentials**.
+
+#### 🔑 Pexels API Key
+- Visit [Pexels API Dashboard](https://www.pexels.com/api/)  
+- Create an account or log in  
+- Generate your **API Key**
+
+#### 🔐 Clerk Keys
+- Go to [Clerk Dashboard](https://dashboard.clerk.com/)  
+- Create a new project  
+- Copy your **Publishable Key** and **Secret Key**
+
+Paste your keys into `.env.local`
+
+---
+
+### 5. Run the Development Server
+
+Start the local server with:
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open the app in your browser:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+👉 [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## ✅ Conclusion
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Image Studios** is a complete, production-ready photo and video browsing platform that demonstrates how to integrate APIs, authentication, and SSR optimization in a modern **Next.js** app.  
+You can easily extend it with custom filters, user collections, or cloud storage integration.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If you find this useful, consider ⭐ **starring the repo** to support the project!
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Author:** [Ali Hasnain](https://github.com/<your-username>)  
+**License:** MIT  
