@@ -2,7 +2,7 @@ import { getData } from "@/utils/api-helpers";
 import { Metadata, ResolvingMetadata } from "next";
 import dynamic from "next/dynamic";
 
-const ImageModal = dynamic(() => import("@/components/image-modal"));
+const ImageView = dynamic(() => import("@/components/image-view"));
 
 type Props = {
     params: Promise<{ id: string }>
@@ -33,6 +33,6 @@ export default async function PhotoPage({
     const data = await getData(`${process.env.PEXELS_API_URI}/photos/${id}`, "PhotoPage", { next: { revalidate: 21600 }, headers: { Authorization: process.env.PEXELS_API_KEY } });
 
     return (
-        <ImageModal data={data} />
+        <ImageView data={data} />
     )
 }
