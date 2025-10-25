@@ -30,10 +30,10 @@ export default function ShareModal({ type, photographer }: ShareModalProps) {
     }
 
     const socialShareLinks = {
-        x: `https://x.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(shareText)}`,
-        pinterest: `https://www.pinterest.com/pin/create/link?url=${encodeURIComponent(currentUrl)}`,
-        linkedin: `https://www.linkedin.com/shareArticle?url=${encodeURIComponent(currentUrl)}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}&t=${encodeURIComponent(shareText)}`,
+        x: `https://x.com/intent/tweet?url=${currentUrl}&text=${shareText}`,
+        pinterest: `https://www.pinterest.com/pin/create/link?url=${currentUrl}`,
+        linkedin: `https://www.linkedin.com/shareArticle?url=${currentUrl}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}&t=${shareText}`,
     };
 
     return (
