@@ -29,11 +29,14 @@ export default function ShareModal({ type, photographer }: ShareModalProps) {
         setTimeout(() => setIsCopied(false), 2000);
     }
 
+    const encodedUrl = encodeURIComponent(currentUrl);
+    const encodedText = encodeURIComponent(shareText);
+
     const socialShareLinks = {
-        x: `https://x.com/intent/tweet?url=${currentUrl}&text=${shareText}`,
-        pinterest: `https://www.pinterest.com/pin/create/link?url=${currentUrl}`,
-        linkedin: `https://www.linkedin.com/shareArticle?url=${currentUrl}`,
-        facebook: `https://www.facebook.com/sharer/sharer.php?u=${currentUrl}&t=${shareText}`,
+        x: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedText}`,
+        pinterest: `https://pinterest.com/pin/create/button/?url=${encodedUrl}&description=${encodedText}`,
+        linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`,
+        facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
     };
 
     return (

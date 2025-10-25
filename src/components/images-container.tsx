@@ -147,9 +147,9 @@ export default function ImagesContainer({ initialData }: ImagesContainerProps) {
                 {/* Filter Bar */}
                 <FilterBar />
 
-                <Link href={""} className="btn">
+                <button className="btn">
                     Photos <div className="badge badge-sm badge-primary">{formatNumber(data.total_results)}</div>
-                </Link>
+                </button>
 
             </div>
 

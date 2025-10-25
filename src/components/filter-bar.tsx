@@ -70,7 +70,6 @@ export default function FilterBar() {
             params.delete('size');
         }
 
-        // router.replace(`${pathname}?${params.toString()}`);
         window.history.replaceState(null, '', `${pathname}?${params.toString()}`);
     };
 
@@ -142,68 +141,70 @@ export default function FilterBar() {
                             </div>
 
                             {/* Color Filter */}
-                            <div>
-                                <label className="text-sm font-medium text-base-content mb-3 block">
-                                    Color
-                                </label>
+                            {pathname.includes("/search/videos/") ? null : (
+                                <div>
+                                    <label className="text-sm font-medium text-base-content mb-3 block">
+                                        Color
+                                    </label>
 
-                                {/* Color Swatches */}
-                                <div className="grid grid-cols-6 gap-2 mb-4">
-                                    {supportedColors.map((color) => (
-                                        <button
-                                            onClick={() => {
-                                                const newFormData = { ...formData, color: color.hex };
-                                                setFormData(newFormData);
-                                                updateSearchParams(newFormData);
-                                            }}
-                                            key={color.name}
-                                            className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${formData.color === color.hex ? 'ring-2 ring-primary ring-offset-2' : ''
-                                                }`}
-                                            style={{ backgroundColor: color.hex }}
-                                            title={color.name}
-                                        >
-                                        </button>
-                                    ))}
-                                </div>
+                                    {/* Color Swatches */}
+                                    <div className="grid grid-cols-6 gap-2 mb-4">
+                                        {supportedColors.map((color) => (
+                                            <button
+                                                onClick={() => {
+                                                    const newFormData = { ...formData, color: color.hex };
+                                                    setFormData(newFormData);
+                                                    updateSearchParams(newFormData);
+                                                }}
+                                                key={color.name}
+                                                className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${formData.color === color.hex ? 'ring-2 ring-primary ring-offset-2' : ''
+                                                    }`}
+                                                style={{ backgroundColor: color.hex }}
+                                                title={color.name}
+                                            >
+                                            </button>
+                                        ))}
+                                    </div>
 
-                                {/* Custom Color Picker */}
-                                <div className="space-y-2">
-                                    <label className="text-xs text-base-content/70">Custom Color</label>
-                                    <div className="flex items-center space-x-2">
-                                        <input
-                                            name="color"
-                                            onChange={handleChange}
-                                            value={formData.color.toUpperCase()}
-                                            type="color"
-                                            className="w-8 h-8 rounded border border-base-300 cursor-pointer"
-                                        />
-                                        <div className="relative flex-1">
+                                    {/* Custom Color Picker */}
+                                    <div className="space-y-2">
+                                        <label className="text-xs text-base-content/70">Custom Color</label>
+                                        <div className="flex items-center space-x-2">
                                             <input
                                                 name="color"
-                                                type="text"
                                                 onChange={handleChange}
                                                 value={formData.color.toUpperCase()}
-                                                placeholder="Enter hex code"
-                                                className="input input-bordered input-sm w-full pr-8"
-                                                pattern="^#[0-9A-Fa-f]{6}$"
+                                                type="color"
+                                                className="w-8 h-8 rounded border border-base-300 cursor-pointer"
                                             />
-                                            {formData.color && (
-                                                <button
-                                                    onClick={() => {
-                                                        const newFormData = { ...formData, color: '' };
-                                                        setFormData(newFormData);
-                                                        updateSearchParams(newFormData);
-                                                    }}
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 rounded-full text-base-content/70 hover:text-base-content hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-base-300"
-                                                    title="Clear color"
-                                                >
-                                                    <X size={14} />
-                                                </button>
-                                            )}
+                                            <div className="relative flex-1">
+                                                <input
+                                                    name="color"
+                                                    type="text"
+                                                    onChange={handleChange}
+                                                    value={formData.color.toUpperCase()}
+                                                    placeholder="Enter hex code"
+                                                    className="input input-bordered input-sm w-full pr-8"
+                                                    pattern="^#[0-9A-Fa-f]{6}$"
+                                                />
+                                                {formData.color && (
+                                                    <button
+                                                        onClick={() => {
+                                                            const newFormData = { ...formData, color: '' };
+                                                            setFormData(newFormData);
+                                                            updateSearchParams(newFormData);
+                                                        }}
+                                                        className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 rounded-full text-base-content/70 hover:text-base-content hover:bg-base-200 focus:outline-none focus:ring-2 focus:ring-base-300"
+                                                        title="Clear color"
+                                                    >
+                                                        <X size={14} />
+                                                    </button>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            )}
 
                             {/* Size Filter */}
                             <div>
