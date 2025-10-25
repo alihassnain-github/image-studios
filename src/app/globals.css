@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+.Toastify__toast {
+    font-family: 'Outfit', sans-serif !important;
+}
+
 /* Hide scrollbar but keep scroll functionality */
 .scrollbar-hide {
     -ms-overflow-style: none;
