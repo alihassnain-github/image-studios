@@ -3,7 +3,7 @@
 A fully functional and scalable **Next.js** application that lets users explore, search, and download **millions of free stock photos and videos** powered by the **Pexels API**.  
 This project also integrates **authentication with Clerk**, providing secure login options via **Google** and **GitHub**.
 
-![Image Studios](./public/preview.png)
+![Image Studios](./public/images/preview.png)
 
 ---
 
