@@ -16,6 +16,9 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Image Studios - Free Stock Photos & Videos",
   description: "Search and discover millions of free stock photos and videos powered by Pexels API",
+  other: {
+    "google-site-verification": "vWQsYYsmmunbr9kae0APyqa1PzkgbKDfbU-HAPGbsXk",
+  },
 };
 
 export default function RootLayout({
